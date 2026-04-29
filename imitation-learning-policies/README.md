@@ -118,3 +118,19 @@ shell_scripts/train_real.sh 0,1    # multi-GPU
 ## Misc.
 
 - The rotation 6d is following the UMI convention, which uses the first 2 **rows** of the rotation matrix rather than the first 2 columns proposed in [this original paper](https://arxiv.org/abs/1812.07035).
+
+
+## Citation
+
+This repository is developed during the following [research project](https://github.com/real-stanford/gated-memory-policy). If you find it useful, please cite our corresponding paper:
+```latex
+@misc{gao2026gatedmemorypolicy,
+  title         = {Gated Memory Policy},
+  author        = {Yihuai Gao and Jinyun Liu and Shuang Li and Shuran Song},
+  year          = {2026},
+  eprint        = {2604.18933},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2604.18933},
+}
+```

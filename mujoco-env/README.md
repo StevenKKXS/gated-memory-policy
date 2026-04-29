@@ -258,3 +258,19 @@ The task name is hardcoded in several places. Add `<task_name>` to every one of 
 ### 5. Rollout config _(optional)_
 
 Create `config/rollout_policy_<task_name>.yaml` to customize rollout settings. If omitted, falls back to `config/rollout_policy.yaml`.
+
+
+## Citation
+
+This repository is developed during the following [research project](https://github.com/real-stanford/gated-memory-policy). If you find it useful, please cite our corresponding paper:
+```latex
+@misc{gao2026gatedmemorypolicy,
+  title         = {Gated Memory Policy},
+  author        = {Yihuai Gao and Jinyun Liu and Shuang Li and Shuran Song},
+  year          = {2026},
+  eprint        = {2604.18933},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2604.18933},
+}
+```

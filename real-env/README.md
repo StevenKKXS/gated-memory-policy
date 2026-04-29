@@ -109,3 +109,20 @@ After all the setup hardware components above, we provide a checklist to run exp
 8. **(Does not have to be in the task script terminal)** To stop policy control and mark success/failure, press `y`/`n` wherever which window is on top; to stop policy control, press `s` there will be a prompt to set success/failure.
 9. To run a single trajectory with policy control, press `C` in the **task script terminal**.
 10. Run `shell_scripts/kill_all_processes.sh` to kill all the processes after the experiment.
+
+
+
+## Citation
+
+This repository is developed during the following [research project](https://github.com/real-stanford/gated-memory-policy). If you find it useful, please cite our corresponding paper:
+```latex
+@misc{gao2026gatedmemorypolicy,
+  title         = {Gated Memory Policy},
+  author        = {Yihuai Gao and Jinyun Liu and Shuang Li and Shuran Song},
+  year          = {2026},
+  eprint        = {2604.18933},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2604.18933},
+}
+```
