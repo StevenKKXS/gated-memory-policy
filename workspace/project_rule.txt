@@ -1,0 +1,3 @@
+# gated-memory-policy - 项目规则
+
+> 适用于所有在 gated-memory-policy 项目下工作的 intern。
