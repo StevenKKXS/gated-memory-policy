@@ -1,6 +1,6 @@
 # task001_gmp_robomimic_ptp_release_repro
 
-<!-- METADATA:STATUS=InProgress,ASSIGNEE=intern_baseline_explorer -->
+<!-- METADATA:STATUS=Completed,ASSIGNEE=intern_baseline_explorer -->
 
 ## 背景
 
@@ -28,3 +28,16 @@
 
 - NFS 小文件目录：`/mnt/nfs/tingwen/gated-memory-policy/intern_baseline_explorer/tasks/task001_gmp_robomimic_ptp_release_repro`
 - Ceph 归档目录：`/mnt/cephfs/home/tinwen.du/gated-memory-policy/intern_baseline_explorer/task_archives/task001_gmp_robomimic_ptp_release_repro`
+
+## 结论摘要
+
+- `ph` / `mh` 来自论文 RoboMimic 图注：`ph` 是 proficient-human 数据，`mh` 是 multi-human 数据。
+- 已在 GPU 节点离线加载 release checkpoint：
+  - `robomimic_tool_hang_ph_midhist_ptp_diffusion.ckpt`
+  - `robomimic_tool_hang_ph_longhist_ptp_diffusion.ckpt`
+  - `robomimic_tool_hang_ph_diffusion.ckpt` 作为 no-history 对照
+- Tool Hang(ph) 小批量 rollout 结果没有复现论文 PTP claim：
+  - no-history DP 对照：9/10 成功，和论文约 82% 同量级。
+  - mid-hist PTP：0/10（seed 10000-10009）以及 0/5（seed 0-4）。
+  - long-hist PTP：0/5（seed 10005-10009）。
+- 当前证据指向：RoboMimic 环境和 policy server 基本通路可用，但 release 的 Tool Hang(ph) PTP ckpt 在当前 release 代码和隔离依赖环境下未复现论文 reported mid-hist PTP 83% / long-hist PTP 32% 的效果。

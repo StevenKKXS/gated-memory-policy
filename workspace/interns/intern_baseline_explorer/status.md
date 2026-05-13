@@ -1,11 +1,11 @@
 # intern_baseline_explorer - 状态
 
-<!-- METADATA:STATUS=Working,TASK=task001_gmp_robomimic_ptp_release_repro -->
+<!-- METADATA:STATUS=Idle,TASK=none -->
 
 | 字段 | 值 |
 |------|-----|
 | Name | intern_baseline_explorer |
-| Status | Working |
-| Current Task | task001_gmp_robomimic_ptp_release_repro |
+| Status | Idle |
+| Current Task | none |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/1 |
 | Session | 1 |
