@@ -7,5 +7,5 @@
 | Name | intern_baseline_explorer |
 | Status | Working |
 | Current Task | task001_gmp_robomimic_ptp_release_repro |
-| PR | Pending creation |
+| PR | https://github.com/StevenKKXS/gated-memory-policy/pull/1 |
 | Session | 1 |
