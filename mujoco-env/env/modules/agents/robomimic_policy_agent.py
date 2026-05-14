@@ -13,6 +13,24 @@ from robot_utils.logging_utils import print_once
 from loguru import logger
 
 
+_IMAGE_KEY_SUFFIXES = ("camera", "image")
+_PROPRIO_KEY_SUFFIXES = (
+    "xyz_wxyz",
+    "gripper_width",
+    "eef_pos",
+    "eef_quat",
+    "gripper_qpos",
+)
+
+
+def _is_image_key(key: str) -> bool:
+    return key.endswith(_IMAGE_KEY_SUFFIXES)
+
+
+def _is_proprio_key(key: str) -> bool:
+    return key.endswith(_PROPRIO_KEY_SUFFIXES)
+
+
 class RobomimicPolicyAgent(BaseAgent):
     def __init__(
         self,
@@ -43,6 +61,44 @@ class RobomimicPolicyAgent(BaseAgent):
     def get_dataset_config(self):
         return ""
 
+    def _validate_batch_obs(self, batch_obs: dict[str, Any]) -> None:
+        expected_image_len = len(self.image_obs_frames_ids)
+        expected_proprio_len = len(self.proprio_obs_frames_ids)
+
+        for key, value in batch_obs.items():
+            if key == "episode_idx":
+                continue
+            if _is_image_key(key) and value.shape[1] != expected_image_len:
+                raise RuntimeError(
+                    f"{key} has history length {value.shape[1]}, expected "
+                    f"{expected_image_len}. Check render_all_images and "
+                    "image_obs_frames_ids."
+                )
+
+        for robot_idx in range(self.robot_num):
+            key = f"robot{robot_idx}_10d"
+            if key not in batch_obs:
+                raise RuntimeError(f"{key} missing from policy batch observation")
+            if batch_obs[key].shape[1] != expected_proprio_len:
+                raise RuntimeError(
+                    f"{key} has history length {batch_obs[key].shape[1]}, "
+                    f"expected {expected_proprio_len}. Check "
+                    "proprio_obs_frames_ids."
+                )
+
+    def _validate_raw_actions(
+        self, raw_actions: dict[str, npt.NDArray[np.float32]]
+    ) -> None:
+        for robot_idx in range(self.robot_num):
+            key = f"action{robot_idx}_10d"
+            if key not in raw_actions:
+                raise RuntimeError(f"{key} missing from policy inference result")
+            if raw_actions[key].shape[1] < self.action_prediction_horizon:
+                raise RuntimeError(
+                    f"{key} has action horizon {raw_actions[key].shape[1]}, "
+                    f"expected at least {self.action_prediction_horizon}."
+                )
+
     def predict_actions(
         self,
         robots_obs: data_buffer_type,
@@ -58,7 +114,7 @@ class RobomimicPolicyAgent(BaseAgent):
         flattened_obs = flatten_episode_data(obs)
 
         for key in flattened_obs.keys():
-            if key.endswith("camera") or key.endswith("image"):  # rgb keys
+            if _is_image_key(key):  # rgb keys
                 flattened_obs[key] = np.moveaxis(
                     flattened_obs[key], -1, -3
                 )  # (obs_history_len, 3, 256, 256)
@@ -67,7 +123,7 @@ class RobomimicPolicyAgent(BaseAgent):
                     flattened_obs[key] = flattened_obs[key][
                         self.image_obs_frames_ids
                     ]  # (image_frame_num, 3, 256, 256)
-            elif key.endswith("xyz_wxyz") or key.endswith("gripper_width"):
+            elif _is_proprio_key(key):
                 if flattened_obs[key].shape[0] > len(self.proprio_obs_frames_ids):
                     flattened_obs[key] = flattened_obs[key][
                         self.proprio_obs_frames_ids
@@ -95,6 +151,7 @@ class RobomimicPolicyAgent(BaseAgent):
             batch_obs.pop(f"robot{i}_eef_quat")
             batch_obs.pop(f"robot{i}_gripper_qpos")
         batch_obs["episode_idx"] = [self.current_episode_idx]  # No need for episode indices
+        self._validate_batch_obs(batch_obs)
 
         print_once(f"Waiting for policy server to respond...")
         raw_results = self.policy_client.request_with_data(
@@ -107,6 +164,7 @@ class RobomimicPolicyAgent(BaseAgent):
         raw_actions = cast(dict[str, npt.NDArray[np.float32]], deserialize(raw_results))
         if isinstance(raw_actions, str):
             raise RuntimeError(f"Policy inference error: {raw_actions}")
+        self._validate_raw_actions(raw_actions)
 
         actions: data_buffer_type = []
 

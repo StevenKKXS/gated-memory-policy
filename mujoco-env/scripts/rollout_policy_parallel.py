@@ -17,6 +17,11 @@ from env.modules.agents.robomimic_policy_parallel_agent import (
 from env.modules.tasks.parallel_task import ParallelTask
 from robot_utils.config_utils import disable_hydra_target
 from env.utils.config_utils import convert_task_to_parallel
+from env.utils.policy_config_utils import (
+    extract_policy_rollout_timing,
+    needs_full_image_history,
+    render_indices_for_policy_images,
+)
 from env.utils.visualize_utils import (
     convert_data_to_video_parallel,
 )
@@ -76,27 +81,26 @@ def main(cfg) -> None:
     )
 
     # Configure task based on policy config
-    proprio_length: int = policy_config["workspace"]["model"]["proprio_length"]
-    image_length: int = policy_config["workspace"]["model"]["image_length"]
-    # assert (
-    #     proprio_length >= image_length
-    # ), f"proprio_length ({proprio_length}) must be greater than or equal to image_length ({image_length})"
-    obs_length = max(proprio_length, image_length)
+    timing = extract_policy_rollout_timing(policy_config)
+    if timing.source == "train_dataset":
+        print("using train_dataset instead of model for legacy checkpoint compatibility")
 
-    task_cfg.task.agent.obs_history_len = obs_length
+    task_cfg.task.agent.obs_history_len = timing.obs_history_len
     task_cfg.task.agent.image_obs_frames_ids = ListConfig(
-        [
-            idx - 1
-            for idx in policy_config["workspace"]["model"]["image_indices"]
-        ]
+        timing.image_obs_frames_ids
     )  # During training data loading, the latest image is indexed as 0, previous frames are -k
     # During rollout, the latest image is indexed as -1, thus need to subtract 1
     task_cfg.task.agent.proprio_obs_frames_ids = ListConfig(
-        [
-            idx - 1
-            for idx in policy_config["workspace"]["model"]["proprio_indices"]
-        ]
+        timing.proprio_obs_frames_ids
     )
+    task_cfg.task.agent.action_prediction_horizon = timing.action_prediction_horizon
+    task_cfg.task.render_image_indices = ListConfig(
+        render_indices_for_policy_images(
+            timing,
+            task_cfg.task.agent.action_execution_horizon,
+        )
+    )
+    task_cfg.task.initial_render_all_images = needs_full_image_history(timing)
 
     task_cfg["task"]["env"] = disable_hydra_target(task_cfg["task"]["env"])
 
@@ -148,8 +152,10 @@ def main(cfg) -> None:
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2f} seconds")
 
-    assert isinstance(task.agent, ManipulationPolicyParallelAgent)
-    export_file_path = task.agent.export_recorded_data(f"rollout_{time_str}")
+    if hasattr(task.agent, "export_recorded_data"):
+        export_file_path = task.agent.export_recorded_data(f"rollout_{time_str}")
+    else:
+        export_file_path = os.path.join(task.data_storage_dir, "episode_data.zarr")
 
     # Convert rollout data to video
     convert_data_to_video_parallel(

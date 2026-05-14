@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Any, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -10,6 +10,24 @@ from env.modules.common import data_buffer_type, robot_data_type
 from robot_utils.data_utils import aggregate_dict
 from env.utils.data_utils import flatten_episode_data
 from robot_utils.pose_utils import quat_wxyz_to_rot_6d_batch, rot_6d_to_quat_wxyz_batch
+
+
+_IMAGE_KEY_SUFFIXES = ("camera", "image")
+_PROPRIO_KEY_SUFFIXES = (
+    "xyz_wxyz",
+    "gripper_width",
+    "eef_pos",
+    "eef_quat",
+    "gripper_qpos",
+)
+
+
+def _is_image_key(key: str) -> bool:
+    return key.endswith(_IMAGE_KEY_SUFFIXES)
+
+
+def _is_proprio_key(key: str) -> bool:
+    return key.endswith(_PROPRIO_KEY_SUFFIXES)
 
 
 class RobomimicPolicyParallelAgent(BaseParallelAgent):
@@ -39,6 +57,44 @@ class RobomimicPolicyParallelAgent(BaseParallelAgent):
     def get_dataset_config(self):
         return ""
 
+    def _validate_batch_obs(self, batch_obs: dict[str, Any]) -> None:
+        expected_image_len = len(self.image_obs_frames_ids)
+        expected_proprio_len = len(self.proprio_obs_frames_ids)
+
+        for key, value in batch_obs.items():
+            if key == "episode_idx":
+                continue
+            if _is_image_key(key) and value.shape[1] != expected_image_len:
+                raise RuntimeError(
+                    f"{key} has history length {value.shape[1]}, expected "
+                    f"{expected_image_len}. Check render_image_indices and "
+                    "image_obs_frames_ids."
+                )
+
+        for robot_idx in range(self.robot_num):
+            key = f"robot{robot_idx}_10d"
+            if key not in batch_obs:
+                raise RuntimeError(f"{key} missing from policy batch observation")
+            if batch_obs[key].shape[1] != expected_proprio_len:
+                raise RuntimeError(
+                    f"{key} has history length {batch_obs[key].shape[1]}, "
+                    f"expected {expected_proprio_len}. Check "
+                    "proprio_obs_frames_ids."
+                )
+
+    def _validate_raw_actions(
+        self, raw_actions: dict[str, npt.NDArray[np.float32]]
+    ) -> None:
+        for robot_idx in range(self.robot_num):
+            key = f"action{robot_idx}_10d"
+            if key not in raw_actions:
+                raise RuntimeError(f"{key} missing from policy inference result")
+            if raw_actions[key].shape[1] < self.action_prediction_horizon:
+                raise RuntimeError(
+                    f"{key} has action horizon {raw_actions[key].shape[1]}, "
+                    f"expected at least {self.action_prediction_horizon}."
+                )
+
     def predict_actions_parallel(
         self,
         episode_buffers_dict: dict[int, dict[str, data_buffer_type]],
@@ -58,7 +114,7 @@ class RobomimicPolicyParallelAgent(BaseParallelAgent):
         batch_obs = {key: aggregated_buffer[key] for key in self.policy_obs_keys}
 
         for key in batch_obs.keys():
-            if key.endswith("camera") or key.endswith("image"):  # rgb keys
+            if _is_image_key(key):  # rgb keys
                 batch_obs[key] = np.moveaxis(
                     batch_obs[key], -1, -3
                 )  # (env_num, obs_history_len, 3, 256, 256)
@@ -68,7 +124,7 @@ class RobomimicPolicyParallelAgent(BaseParallelAgent):
                         :, self.image_obs_frames_ids, ...
                     ]  # (env_num, image_frame_num, 3, 256, 256)
 
-            elif key.endswith("xyz_wxyz") or key.endswith("gripper_width"):
+            elif _is_proprio_key(key):
                 if batch_obs[key].shape[1] > len(self.proprio_obs_frames_ids):
                     batch_obs[key] = batch_obs[key][
                         :, self.proprio_obs_frames_ids
@@ -92,6 +148,7 @@ class RobomimicPolicyParallelAgent(BaseParallelAgent):
             batch_obs.pop(f"robot{j}_eef_quat")
             batch_obs.pop(f"robot{j}_gripper_qpos")
         batch_obs["episode_idx"] = np.array(list(episode_buffers_dict.keys()))
+        self._validate_batch_obs(batch_obs)
 
         raw_results = self.policy_client.request_with_data(
             "policy_inference", serialize(batch_obs), timeout_s=5
@@ -100,6 +157,7 @@ class RobomimicPolicyParallelAgent(BaseParallelAgent):
         raw_actions = cast(dict[str, npt.NDArray[np.float32]], deserialize(raw_results))
         if isinstance(raw_actions, str):
             raise RuntimeError(f"Policy inference error: {raw_actions}")
+        self._validate_raw_actions(raw_actions)
 
         actions_dict: dict[int, data_buffer_type] = {}
 
@@ -136,3 +194,10 @@ class RobomimicPolicyParallelAgent(BaseParallelAgent):
             "policy_reset", serialize(True)
         )
         assert raw_results, "Failed to reset policy agent"
+
+    def export_recorded_data(self, file_name: str):
+        return deserialize(
+            self.policy_client.request_with_data(
+                "export_recorded_data", serialize(file_name), 100
+            )
+        )

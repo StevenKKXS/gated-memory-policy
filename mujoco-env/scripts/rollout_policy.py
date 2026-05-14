@@ -10,6 +10,10 @@ from omegaconf.omegaconf import OmegaConf, ListConfig
 from env.utils.visualize_utils import (
     convert_data_to_video_parallel,
 )
+from env.utils.policy_config_utils import (
+    extract_policy_rollout_timing,
+    needs_full_image_history,
+)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -95,39 +99,24 @@ def main(cfg) -> None:
     )
 
     # Configure task based on policy config
-    try:
-        proprio_length: int = policy_config["workspace"]["model"]["proprio_length"]
-        image_length: int = policy_config["workspace"]["model"]["image_length"]
-        action_length: int = policy_config["workspace"]["model"]["action_length"]
-        action_indices: list[int] = policy_config["workspace"]["model"]["action_indices"]
-        image_indices: list[int] = policy_config["workspace"]["model"]["image_indices"]
-        proprio_indices: list[int] = policy_config["workspace"]["model"]["proprio_indices"]
-    except KeyError:
-        print(f"using train_dataset instead of model for legacy checkpoint compatibility")
-        proprio_length = policy_config["workspace"]["train_dataset"]["proprio_length"]
-        image_length = policy_config["workspace"]["train_dataset"]["image_length"]
-        action_length = policy_config["workspace"]["train_dataset"]["action_length"]
-        action_indices = policy_config["workspace"]["train_dataset"]["action_indices"]
-        image_indices = policy_config["workspace"]["train_dataset"]["image_indices"]
-        proprio_indices = policy_config["workspace"]["train_dataset"]["proprio_indices"]
+    timing = extract_policy_rollout_timing(policy_config)
+    if timing.source == "train_dataset":
+        print("using train_dataset instead of model for legacy checkpoint compatibility")
 
-    if action_indices[0] < 0:  # Using Past token prediction, that predict history actions
-        action_length = sum([idx >= 0 for idx in action_indices])
-
-    obs_length = max(proprio_length, image_length)
-
-    task_cfg.task.agent.obs_history_len = obs_length
+    task_cfg.task.agent.obs_history_len = timing.obs_history_len
     task_cfg.task.agent.image_obs_frames_ids = ListConfig(
-        [idx - 1 for idx in image_indices]
+        timing.image_obs_frames_ids
     )  # During training data loading, the latest image is indexed as 0, previous frames are -k
     # During rollout, the latest image is indexed as -1, thus need to subtract 1
     task_cfg.task.agent.proprio_obs_frames_ids = ListConfig(
-        [idx - 1 for idx in proprio_indices]
+        timing.proprio_obs_frames_ids
     )
 
     print(f"task_cfg.task.agent.proprio_obs_frames_ids: {task_cfg.task.agent.proprio_obs_frames_ids}")
 
-    task_cfg.task.agent.action_prediction_horizon = action_length
+    task_cfg.task.agent.action_prediction_horizon = timing.action_prediction_horizon
+    if needs_full_image_history(timing):
+        task_cfg.task.render_all_images = True
 
     # Set use_relative_pose from policy config if applicable
     if (

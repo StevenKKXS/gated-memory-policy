@@ -6,8 +6,10 @@ from omegaconf import DictConfig, OmegaConf
 def convert_task_to_parallel(task_cfg: DictConfig):
     OmegaConf.set_struct(task_cfg, False)
     task_cfg.env_num = "???"
-    # Currently hardcode that policy only use the last image
+    # Default for latest-frame policies. Rollout entry points override this
+    # after reading the release checkpoint policy config.
     task_cfg.render_image_indices = [-1]
+    task_cfg.initial_render_all_images = False
     task_cfg.data_storage_dir = "???"
 
     if task_cfg.name.startswith("robomimic"):

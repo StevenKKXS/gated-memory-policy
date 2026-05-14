@@ -34,6 +34,7 @@ class Worker:
         obs_history_len: int,
         action_history_len: int,
         action_execution_horizon: int,
+        initial_render_all_images: bool = False,
     ):
         self.worker_id: int = worker_id
         env_cfg = enable_hydra_target(env_cfg)
@@ -43,6 +44,7 @@ class Worker:
         self.obs_history_len: int = obs_history_len
         self.action_history_len: int = action_history_len
         self.action_execution_horizon: int = action_execution_horizon
+        self.initial_render_all_images: bool = initial_render_all_images
         self.episode_config: dict[str, Any] = {}
 
     def init_episode(self, episode_config: dict[str, Any]):
@@ -60,17 +62,23 @@ class Worker:
         """
         self.episode_config = copy.deepcopy(episode_config)
         obs, info = self.env.reset(self.episode_config)
-        obs_without_image, _, _, _ = self.env.step(None, render_image=False)
+        obs_without_image = None
+        if not self.initial_render_all_images:
+            obs_without_image, _, _, _ = self.env.step(None, render_image=False)
         robots_obs: "data_buffer_type" = []
         env_objs_obs: "data_buffer_type" = []
         executed_actions: "data_buffer_type" = []
 
         for i in range(self.obs_history_len):
-            if i - self.obs_history_len in self.render_image_indices:
+            if (
+                self.initial_render_all_images
+                or i - self.obs_history_len in self.render_image_indices
+            ):
                 robots_obs.append(obs["robots_obs"])
                 env_objs_obs.append(obs["env_objs_obs"])
             else:
                 # To make sure the all data has the same shape
+                assert obs_without_image is not None
                 robots_obs.append(obs_without_image["robots_obs"])
                 env_objs_obs.append(obs_without_image["env_objs_obs"])
 
@@ -204,6 +212,7 @@ class ParallelTask:
         render_image_indices: list[int],
         data_storage_dir: str,
         successful_reward: float,
+        initial_render_all_images: bool = False,
         **kwargs,
     ):
         logger.info(f"ParallelTask redundant kwargs: {kwargs}")
@@ -212,6 +221,7 @@ class ParallelTask:
 
         self.agent: "BaseParallelAgent" = agent
         self.render_image_indices: list[int] = render_image_indices
+        self.initial_render_all_images: bool = initial_render_all_images
         self.data_storage_dir: str = data_storage_dir
 
         if len(self.data_storage_dir) > 0 and not os.path.exists(self.data_storage_dir):
@@ -267,6 +277,7 @@ class ParallelTask:
                 agent.obs_history_len,
                 agent.action_history_len,
                 agent.action_execution_horizon,
+                self.initial_render_all_images,
             )
             for i in range(env_num)
         ]
