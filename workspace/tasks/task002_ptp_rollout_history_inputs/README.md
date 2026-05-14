@@ -1,6 +1,6 @@
 # task002_ptp_rollout_history_inputs
 
-<!-- METADATA:STATUS=InProgress,ASSIGNEE=intern_baseline_explorer,BRANCH=intern_baseline_explorer/task002_ptp_rollout_history_inputs,PR=pending -->
+<!-- METADATA:STATUS=Completed,ASSIGNEE=intern_baseline_explorer,BRANCH=intern_baseline_explorer/task002_ptp_rollout_history_inputs,PR=https://github.com/StevenKKXS/gated-memory-policy/pull/2 -->
 
 ## 目标
 
