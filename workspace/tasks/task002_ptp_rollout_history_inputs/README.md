@@ -20,3 +20,11 @@
   - nohist: `obs_history_len=1`, `action_horizon=16`, `render_image_indices=[-1]`
   - midhist PTP: `obs_history_len=16`, `action_horizon=16`, `render_image_indices=[-8..-1]`
   - longhist PTP: `obs_history_len=121`, `action_horizon=16`, `render_image_indices=[-8..-1]`
+- GPU 验证在 `10.100.10.31:24936` 完成，GPU 不联网；代码、checkpoint、HF cache 均通过 NFS 准备，并复制到 GPU 本地 `/tmp/task002_gmp_local` 运行。
+- GPU rollout 结果：
+  - midhist 单进程 1 episode，seed 10000：完整结束，无 history shape 错误，成功率 `0/1`
+  - midhist 并行 2 episodes，seed 10005，env_num 2：完整结束，原 `traj_len(1) != meta.length(16)` 不再出现，成功率 `0/2`
+  - longhist 单进程 1 episode，seed 10005：完整结束，无 index 越界或 history shape 错误，成功率 `0/1`
+  - midhist 并行 10 episodes，seed 10005，env_num 5：完整结束，成功率 `0/10`
+- NFS 结果清单：`/mnt/nfs/tingwen/gated-memory-policy/intern_baseline_explorer/tasks/task002_ptp_rollout_history_inputs/manifests/rollout_validation_pr2.tsv`
+- Ceph 小文件归档：`/mnt/cephfs/home/tinwen.du/gated-memory-policy/intern_baseline_explorer/task_archives/task002_ptp_rollout_history_inputs/`
