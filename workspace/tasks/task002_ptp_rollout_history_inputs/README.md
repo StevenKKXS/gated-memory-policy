@@ -26,5 +26,6 @@
   - midhist 并行 2 episodes，seed 10005，env_num 2：完整结束，原 `traj_len(1) != meta.length(16)` 不再出现，成功率 `0/2`
   - longhist 单进程 1 episode，seed 10005：完整结束，无 index 越界或 history shape 错误，成功率 `0/1`
   - midhist 并行 10 episodes，seed 10005，env_num 5：完整结束，成功率 `0/10`
+  - midhist 并行 50 episodes，seed 10005，env_num 10：完整结束，成功率 `0/50`，mean reward `0.0`，耗时 `620.12s`
 - NFS 结果清单：`/mnt/nfs/tingwen/gated-memory-policy/intern_baseline_explorer/tasks/task002_ptp_rollout_history_inputs/manifests/rollout_validation_pr2.tsv`
 - Ceph 小文件归档：`/mnt/cephfs/home/tinwen.du/gated-memory-policy/intern_baseline_explorer/task_archives/task002_ptp_rollout_history_inputs/`
