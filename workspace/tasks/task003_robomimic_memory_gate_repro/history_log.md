@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=4 -->
+<!-- METADATA:SESSION=5 -->
 
 ## Session 1 - 2026-06-02
 
@@ -63,3 +63,15 @@
 - 已跑通 RoboMimic square 1-episode smoke：MuJoCo task 参数为 `robomimic_square`，run 目录 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-runs/task003_robomimic_memory_gate_repro/robomimic_square_smoke_20260602_133014`。
 - Smoke 结果：episode 执行完成，policy inference 约 `0.096s`/chunk，episode reward `0.0`，success rate `0.0`，`episode_data.zarr` 和 4 个 failure mp4 已保存。
 - Smoke 结束后已停止临时 policy server，GPU 上未残留 `run_policy_server.py` / `rollout_policy.py` / `mikasa_eval.py` / pip / HF download 进程。
+
+## Session 5 - 2026-06-02
+
+- 回答主管关于 simulation benchmark、环境差异和环境职责的三个问题。
+- 从仓库 README 确认 simulation benchmark family 包括 Memimic/MemMimic、RoboMimic、Mikasa-Robo；MemMimic 确认存在，使用 `mujoco-env`。
+- 从 `mujoco-env/README.md` 和配置确认 MemMimic/MuJoCo 任务包括 `pick_and_match_color`、`pick_and_match_color_rand_delay`、`pick_and_place_back`、`push_cube`、`fling_cloth`；RoboMimic MuJoCo 任务包括 `robomimic_square`、`robomimic_tool_hang`、`robomimic_transport`。
+- 从 `mikasa-robo-env/README.md` 确认当前 README 列出的 Mikasa-Robo eval env/checkpoint 包括 `ShellGameTouch-v0`、`InterceptMedium-v0`、`RememberColor3-v0`、`RememberColor5-v0`、`RememberColor9-v0`；policy configs 里还有更多 Mikasa 任务配置。
+- 对比仓库推荐 env：
+  - `imitation-learning-policies/env.yaml` 推荐 conda `imitation` + Python 3.10；当前 `imitation-py312` 为 venv + Python 3.12.3，主要 Python 包版本与推荐基本一致，`pip` 为 26.1.2，`torch` 当前为 2.8.0。
+  - `mujoco-env/env.yaml` 推荐 conda `mujoco-env` + Python 3.10.15 + `ray-core=2.9.0`；当前 `mujoco-py312` 为 Python 3.12.3，`ray==2.31.0`，原因是 `ray==2.9.0` 不支持 Python 3.12。MuJoCo/torch/robosuite/robomimic 关键版本已验证：`mujoco==3.3.5`、`torch==2.8.0`、submodule `robosuite==1.5.1`、`robomimic==0.4.0`。
+  - `mikasa-robo-env/env.yml` 推荐 conda `mikasa` + Python 3.11.15；当前 `mikasa-py312` 为 Python 3.12.3，大多数关键 pip pin 与推荐一致，包括 `torch==2.10.0`、`transformers==5.3.0`、`mani-skill==3.0.0b15`、`sapien==3.0.0b1`。
+- 明确环境职责：`imitation-learning-policies` 是训练/推理服务环境，服务 MemMimic、RoboMimic、Mikasa-Robo 以及 real；`mujoco-env` 是 MemMimic + RoboMimic 的 MuJoCo simulator；`mikasa-robo-env` 是 Mikasa-Robo 的 ManiSkill simulator。

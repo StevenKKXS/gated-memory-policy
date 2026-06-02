@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=4 -->
+<!-- METADATA:SESSION=5 -->
 
 ## 记录规则
 
@@ -35,3 +35,6 @@
 - GPU 验证：`10.100.2.39:23494` 上 3 个 venv 均可通过关键 import；`imitation-py312` 和 `mujoco-py312` 使用 `torch==2.8.0+cu128`，`mikasa-py312` 使用 `torch==2.10.0+cu128`，均可见 8 张 H200。
 - RoboMimic MuJoCo rollout 的 task 参数使用环境名 `robomimic_square`、`robomimic_tool_hang`、`robomimic_transport`；checkpoint 文件名里的 `_ph` / `_mh` 不作为 `scripts/rollout_policy.py` 的 task 参数。
 - 已在 GPU 节点跑通 RoboMimic square 1-episode smoke：ckpt `robomimic/robomimic_square_ph_diffusion_gated.ckpt`，run 目录 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-runs/task003_robomimic_memory_gate_repro/robomimic_square_smoke_20260602_133014`，episode 执行完成，success rate `0.0`，失败视频和 zarr 已保存。
+- 仓库 README 明确 simulation benchmark family 是 Memimic/MemMimic、RoboMimic、Mikasa-Robo；MemMimic 存在，HF checkpoint/dataset 路径使用 `memmimic/**`。
+- 环境职责：`imitation-learning-policies` 是 policy 训练/推理服务环境，不是仿真器；`mujoco-env` 负责 MemMimic + RoboMimic 的 MuJoCo 仿真；`mikasa-robo-env` 负责 Mikasa-Robo 的 ManiSkill 仿真。
+- 当前环境相对推荐 env 的最大偏移是 Python/环境管理方式：官方使用 conda，推荐 `imitation` Python 3.10、`mujoco-env` Python 3.10.15、`mikasa` Python 3.11.15；本任务使用 venv 且三套均为 Python 3.12.3。

@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 4 |
-| 最近进展 | 已在 CPU 侧下载仿真 ckpt 与 SigLIP cache 到 3fs，完成 3 个隔离 venv 验证，并跑通 RoboMimic square gated ckpt 的 1-episode smoke。 |
+| Session | 5 |
+| 最近进展 | 已核对 simulation benchmark 范围、MemMimic 是否包含，以及当前 3 个 venv 与仓库推荐 conda env 的关键版本差异。 |
