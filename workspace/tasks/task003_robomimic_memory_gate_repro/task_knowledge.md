@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=6 -->
+<!-- METADATA:SESSION=7 -->
 
 ## 记录规则
 
@@ -39,3 +39,41 @@
 - 环境职责：`imitation-learning-policies` 是 policy 训练/推理服务环境，不是仿真器；`mujoco-env` 负责 MemMimic + RoboMimic 的 MuJoCo 仿真；`mikasa-robo-env` 负责 Mikasa-Robo 的 ManiSkill 仿真。
 - 当前环境相对推荐 env 的最大偏移是 Python/环境管理方式：官方使用 conda，推荐 `imitation` Python 3.10、`mujoco-env` Python 3.10.15、`mikasa` Python 3.11.15；本任务使用 venv 且三套均为 Python 3.12.3。
 - venv 不能原地修改 Python minor version；要对齐 GitHub 推荐 Python，必须先安装/放置对应解释器，再创建新 venv。建议新增 `imitation-py310`、`mujoco-py310`、`mikasa-py311`，保留已跑通的 `*-py312` 作为回滚环境。
+- Python 对齐解释器已经构建在 3fs：
+  - Python 3.10.15：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-envs/python-interpreters/cpython-3.10.15/bin/python3.10`
+  - Python 3.11.15：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-envs/python-interpreters/cpython-3.11.15/bin/python3.11`
+  - GPU 上 `import tkinter` 因 runtime `libtk` 缺失失败；仿真链路不依赖 tkinter。
+- Python 对齐 venv 已创建，旧 py312 venv 保留：
+  - `source /mnt/3fs1/data/tingwen.du/gated-memory-policy-envs/task003_robomimic_memory_gate_repro/imitation-py310/bin/activate`
+  - `source /mnt/3fs1/data/tingwen.du/gated-memory-policy-envs/task003_robomimic_memory_gate_repro/mujoco-py310/bin/activate`
+  - `source /mnt/3fs1/data/tingwen.du/gated-memory-policy-envs/task003_robomimic_memory_gate_repro/mikasa-py311/bin/activate`
+- 三套新 venv 的 effective pip 配置已验证：
+  - `pip config get global.index-url` -> `http://10.100.197.13/simple/`
+  - `pip config get global.trusted-host` -> `10.100.197.13`
+  - 每个 venv 内也有 site-level `pip.conf`；新 GPU 仍需先写全局/用户 pip 镜像，再执行安装。
+- 对齐 venv 关键版本：
+  - `imitation-py310`：Python 3.10.15，`torch==2.8.0`、`torchvision==0.23.0`、`transformers==4.48.3`、`diffusers==0.33.1`、`accelerate==1.3.0`、`peft==0.14.0`。
+  - `mujoco-py310`：Python 3.10.15，`mujoco==3.3.5`、`dm_control==1.0.31`、`ray==2.9.0`、editable `robosuite==1.5.1`、editable `robomimic==0.4.0`。
+  - `mikasa-py311`：Python 3.11.15，`torch==2.10.0`、`torchvision==0.25.0`、`transformers==5.3.0`、`mani_skill==3.0.0b15`、`sapien==3.0.0b1`、`mplib==0.1.1`；`mani_skill.__version__` 返回 `3.0.0b14`，与 package metadata 不一致。
+- MuJoCo/RoboMimic GPU 运行环境变量：
+  - `MUJOCO_GL=egl`
+  - `PYOPENGL_PLATFORM=egl`
+  - `HF_HOME=/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/hf-home`
+  - `TRANSFORMERS_OFFLINE=1`
+  - `HF_HUB_OFFLINE=1`
+- MiKASA/ManiSkill GPU 运行环境变量：
+  - `VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json`
+  - `MS_ASSET_DIR=/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/maniskill-assets`
+  - `HF_HOME=/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/hf-home`
+  - `TRANSFORMERS_OFFLINE=1`
+  - `HF_HUB_OFFLINE=1`
+  - `PYTHONPATH=/mnt/3fs1/data/tingwen.du/gated-memory-policy/mikasa-robo-env:/mnt/3fs1/data/tingwen.du/gated-memory-policy/imitation-learning-policies`
+- ManiSkill `ycb` 资产路径：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/maniskill-assets/assets/mani_skill2_ycb`。包内 checksum 记录 `174001ba...` 已过期；当前可用 zip sha256 是 `1551724fd1ac7bad9807ebcf46dd4a788caed5c9499c1225b9bfa080ffbefcb3`，原始 zip 保存在 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/downloads/mani_skill2_ycb.zip`。
+- SAPIEN PhysX GPU 库需要预置到 GPU 用户 home：`/root/.sapien/physx/105.1-physx-5.3.1.patch0/libPhysXGpu_64.so`。原始 zip 保存在 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/downloads/sapien-physx-105.1-physx-5.3.1.patch0-linux-so.zip`，sha256 `167a01aad7381afef963b89169968c289e7b653880a7a823c116d87ee5c00fc6`。
+- RoboMimic 5-task 100 episode 复现使用 `mujoco-py310` + `imitation-py310`；`env_num=20` 在当前 GPU/Ray 初始化阶段过慢，`env_num=4` 稳定完成。结果目录：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/robomimic_full_env4_20260602_150528`。
+- MiKASA 5-task 100 episode 复现使用 `mikasa-py311`，命令模板：
+  - `python eval/mikasa_eval.py --env-id ShellGameTouch-v0 --checkpoint /mnt/3fs1/data/tingwen.du/gated-memory-policy-data/checkpoints/mikasa/mikasa_shell_game_touch_diffusion_memory.ckpt --num-envs 50 --num-eval-episodes 100 --abs-joint-pos --seed 42 --output-dir <run_dir>`
+  - 其他 env-id / ckpt 对应：`InterceptMedium-v0` -> `mikasa_intercept_medium_diffusion_memory.ckpt`，`RememberColor3-v0` -> `mikasa_remember_color_3_diffusion_memory.ckpt`，`RememberColor5-v0` -> `mikasa_remember_color_5_diffusion_memory.ckpt`，`RememberColor9-v0` -> `mikasa_remember_color_9_diffusion_memory.ckpt`。
+- 统一 GMP 复现结果表：
+  - Markdown：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.md`
+  - JSON：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.json`

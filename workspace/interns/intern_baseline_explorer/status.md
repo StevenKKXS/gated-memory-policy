@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 6 |
-| 最近进展 | 已完成 venv 对齐 GitHub 推荐 Python/env 的可行性分析：需先新增 Python 3.10/3.11 解释器，再创建新 venv，不能原地改现有 py312 venv。 |
+| Session | 7 |
+| 最近进展 | 已新增 Python 3.10/3.11 对齐 venv，完成 RoboMimic 与 Mikasa-Robo GMP ckpt smoke 和 100 episode 复现；统一结果表在 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.md`。 |

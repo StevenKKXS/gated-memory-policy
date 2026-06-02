@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=6 -->
+<!-- METADATA:SESSION=7 -->
 
 ## Session 1 - 2026-06-02
 
@@ -88,3 +88,46 @@
 - 可行路径：在 CPU 侧下载或构建 portable CPython 3.10/3.11 到 3fs，再在 GPU 使用这些解释器创建 venv；所有 pip 配置继续使用内部镜像 `http://10.100.197.13/simple/`，公网下载放在 CPU 侧完成。
 - 风险：venv 能做到 Python 和大部分 pip 包版本对齐，但不能完全复刻 conda solver / conda channel 里的二进制包选择；因此目标应定义为“功能和关键版本对齐”，不是 bit-identical conda 环境。
 - 空间可行：3fs `/mnt/3fs1` 约 883T 可用；当前 3 个 py312 venv 总量约 24GB，保留旧环境并新增对齐 venv 的空间风险低。
+
+## Session 7 - 2026-06-02
+
+- 按主管要求新增 Python 版本对齐 venv，保留已有 py312 venv 不动；CPU 侧构建并放置 portable CPython：
+  - `/mnt/3fs1/data/tingwen.du/gated-memory-policy-envs/python-interpreters/cpython-3.10.15`
+  - `/mnt/3fs1/data/tingwen.du/gated-memory-policy-envs/python-interpreters/cpython-3.11.15`
+- 新增 3 个 venv：
+  - `imitation-py310`：Python 3.10.15，关键版本 `torch==2.8.0`、`torchvision==0.23.0`、`transformers==4.48.3`、`diffusers==0.33.1`、`accelerate==1.3.0`、`peft==0.14.0`。
+  - `mujoco-py310`：Python 3.10.15，关键版本 `mujoco==3.3.5`、`dm_control==1.0.31`、`ray==2.9.0`、editable `robosuite==1.5.1`、editable `robomimic==0.4.0`；`pip check` 通过。
+  - `mikasa-py311`：Python 3.11.15，关键版本 `torch==2.10.0`、`torchvision==0.25.0`、`transformers==5.3.0`、`mani_skill==3.0.0b15`、`sapien==3.0.0b1`、`mplib==0.1.1`；`pip check` 通过。
+- 三套新 venv 的 effective pip 配置均为内部镜像：`global.index-url=http://10.100.197.13/simple/`、`global.trusted-host=10.100.197.13`。
+- CPU/GPU smoke：
+  - `imitation-py310` 可离线加载 `robomimic_square_ph_diffusion_gated.ckpt`，GPU CUDA 可见 8 张 H200。
+  - `mujoco-py310` 在 GPU 上通过 `MUJOCO_GL=egl PYOPENGL_PLATFORM=egl` 创建 MuJoCo EGL context。
+  - `mikasa-py311` 在 CPU/GPU 上 import 通过；注意 `pip show mani_skill` 为 `3.0.0b15`，但 `mani_skill.__version__` 报 `3.0.0b14`。
+- RoboMimic smoke：手动 venv policy server + MuJoCo env server + orchestrator 跑通 2 episodes，run 目录 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/robomimic_smoke_20260602_145418`，`robomimic_square_ph_diffusion_gated` success rate `0.5`。
+- RoboMimic 完整复现：`env_num=20` 首次启动 Ray/MuJoCo worker 过慢，改用 `env_num=4` 稳定跑完 5 个 task，每个 100 episodes。结果目录：
+  - `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/robomimic_full_env4_20260602_150528`
+  - `robomimic_results.md` / `robomimic_results.json`
+- RoboMimic 结果：
+  - `robomimic_square_mh` epoch 9，success rate `0.89`。
+  - `robomimic_square_ph` epoch 11，success rate `0.96`。
+  - `robomimic_tool_hang_ph` epoch 18，success rate `0.80`。
+  - `robomimic_transport_mh` epoch 6，success rate `0.78`。
+  - `robomimic_transport_ph` epoch 20，success rate `0.13`。
+- MiKASA/ManiSkill 离线配置补齐：
+  - `HF_HOME=/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/hf-home TRANSFORMERS_OFFLINE=1 HF_HUB_OFFLINE=1` 用于 SigLIP 离线加载。
+  - `VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json` 用于 GPU Vulkan ICD。
+  - `MS_ASSET_DIR=/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/maniskill-assets` 用于 ManiSkill 资产。
+  - ManiSkill `ycb` 官方 checksum 记录已过期；CPU 侧下载 `mani_skill2_ycb.zip` 后 `unzip -t` 通过，实际 sha256 为 `1551724fd1ac7bad9807ebcf46dd4a788caed5c9499c1225b9bfa080ffbefcb3`，已解压到 `.../maniskill-assets/assets/mani_skill2_ycb`。
+  - SAPIEN 首次 `physx.enable_gpu()` 会从 GitHub 拉 `linux-so.zip`；已在 CPU 侧下载 `sapien-physx-105.1-physx-5.3.1.patch0-linux-so.zip` 并在 GPU 解压到 `/root/.sapien/physx/105.1-physx-5.3.1.patch0/libPhysXGpu_64.so`。
+- MiKASA smoke：`ShellGameTouch-v0` 2 episodes 跑通，run 目录 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/mikasa_smoke_physx_20260602_160257`，`success_once=1.0`，`success_at_end=1.0`。
+- MiKASA 完整复现：5 个 task 使用 `num-envs=50`、`num-eval-episodes=100`、`--abs-joint-pos`、`seed=42`，并行分配 GPU0-4，run 目录 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/mikasa_full_20260602_160517`，`STATUS=0`。
+- MiKASA 结果：
+  - `mikasa_shell_game_touch` / `ShellGameTouch-v0` epoch 8，`success_once=0.99`，`success_at_end=0.97`。
+  - `mikasa_intercept_medium` / `InterceptMedium-v0` epoch 16，`success_once=0.80`，`success_at_end=0.14`。
+  - `mikasa_remember_color_3` / `RememberColor3-v0` epoch 32，`success_once=0.98`，`success_at_end=0.36`。
+  - `mikasa_remember_color_5` / `RememberColor5-v0` epoch 50，`success_once=0.72`，`success_at_end=0.27`。
+  - `mikasa_remember_color_9` / `RememberColor9-v0` epoch 30，`success_once=0.21`，`success_at_end=0.10`。
+- 统一结果表已生成：
+  - `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.md`
+  - `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.json`
+- 评测结束后检查 GPU：`run_policy_server.py`、`rollout_policy.py`、`mikasa_eval.py`、Ray worker 均无残留，8 张 GPU 显存回到约 `1 MiB`。
