@@ -9,4 +9,4 @@
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
 | Session | 4 |
-| 最近进展 | 已在 CPU 侧下载 RoboMimic/Mikasa gated-memory 仿真 ckpt 到 3fs，并完成 3 个隔离 venv 的 CPU/GPU import 验证。 |
+| 最近进展 | 已在 CPU 侧下载仿真 ckpt 与 SigLIP cache 到 3fs，完成 3 个隔离 venv 验证，并跑通 RoboMimic square gated ckpt 的 1-episode smoke。 |

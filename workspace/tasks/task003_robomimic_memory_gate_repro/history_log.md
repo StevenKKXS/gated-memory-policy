@@ -57,3 +57,9 @@
   - GPU 节点上 `mujoco-py312` 可 import RoboMimic/MuJoCo，并成功创建 `MUJOCO_GL=egl` context；退出时出现一个 EGL destructor ignored exception，但 context 创建已成功。
   - GPU 节点上 `mikasa-py312` 可 import ManiSkill beta、SAPIEN beta、xmate3 和 `mikasa_robo_suite`，CUDA 可见。
 - 新增复用说明：`workspace/tasks/task003_robomimic_memory_gate_repro/simulation_setup.md`。
+- 首次启动 RoboMimic policy server 时发现离线依赖缺失：ckpt 实例化会调用 `SiglipVisionModel.from_pretrained("google/siglip2-base-patch16-256")`，GPU 无法联网导致失败。
+- 已在 CPU 侧下载 `google/siglip2-base-patch16-256` 的 7 个 snapshot 文件到本地 cache，再复制到 3fs HF cache：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/hf-home`，大小约 1.5GB；`TRANSFORMERS_OFFLINE=1 HF_HUB_OFFLINE=1` 下已验证可加载。
+- 重新在 GPU 节点启动 policy server，使用 ckpt `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/checkpoints/robomimic/robomimic_square_ph_diffusion_gated.ckpt`，server 端口 `18923`，成功加载 SigLIP、MemoryGate 和 diffusion policy。
+- 已跑通 RoboMimic square 1-episode smoke：MuJoCo task 参数为 `robomimic_square`，run 目录 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-runs/task003_robomimic_memory_gate_repro/robomimic_square_smoke_20260602_133014`。
+- Smoke 结果：episode 执行完成，policy inference 约 `0.096s`/chunk，episode reward `0.0`，success rate `0.0`，`episode_data.zarr` 和 4 个 failure mp4 已保存。
+- Smoke 结束后已停止临时 policy server，GPU 上未残留 `run_policy_server.py` / `rollout_policy.py` / `mikasa_eval.py` / pip / HF download 进程。
