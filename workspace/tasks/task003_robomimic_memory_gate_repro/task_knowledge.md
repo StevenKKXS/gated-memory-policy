@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=1 -->
+<!-- METADATA:SESSION=2 -->
 
 ## 记录规则
 
@@ -15,3 +15,5 @@
 - README 推荐 checkpoint 下载命令：`hf download yihuai-gao/gated-memory-policy --type model --include "robomimic/**" --local-dir ./data/checkpoints`。
 - RoboMimic rollout 需要先 serve policy checkpoint，再由 `mujoco-env` 运行 `shell_scripts/rollout_policy.sh` 或 `rollout_policy_parallel.sh`。
 - RoboMimic submodule 版本很关键：README 明确要求 `git submodule update --init --recursive` 后安装 `third_party/robosuite` 和 `third_party/robomimic`。
+- GPU 节点不能直接联网；后续 Python 环境应使用 venv + 可用 pip 镜像方案，不先走 conda 在线安装。
+- `/mnt/3fs1/data/tingwen.du/gated-memory-policy` 当前需要重新恢复为可用 git checkout，再继续 submodule、venv、checkpoint 和 eval。

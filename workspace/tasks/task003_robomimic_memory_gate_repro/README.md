@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro
 
-<!-- METADATA:STATUS=InProgress,ASSIGNEE=intern_baseline_explorer,BRANCH=intern_baseline_explorer/task003_robomimic_memory_gate_repro,PR= -->
+<!-- METADATA:STATUS=InProgress,ASSIGNEE=intern_baseline_explorer,BRANCH=intern_baseline_explorer/task003_robomimic_memory_gate_repro,PR=https://github.com/StevenKKXS/gated-memory-policy/pull/3 -->
 
 ## 背景
 
