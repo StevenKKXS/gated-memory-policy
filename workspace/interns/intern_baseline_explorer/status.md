@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 2 |
-| 最近进展 | 已暂停 GPU 侧 venv、checkpoint 下载和 eval，等待 pip 镜像 / venv 方案后继续。 |
+| Session | 3 |
+| 最近进展 | 已在 GPU 节点写入内部 pip 镜像配置，并将可复用 pip.conf 模板记录到任务目录。 |
