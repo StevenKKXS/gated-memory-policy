@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=3 -->
+<!-- METADATA:SESSION=4 -->
 
 ## 记录规则
 
@@ -25,3 +25,10 @@
   - 检查命令：`python3 -m pip config list -v`，应看到 `global.index-url='http://10.100.197.13/simple/'` 和 `global.trusted-host='10.100.197.13'`。
 - 可直接复制模板 `workspace/tasks/task003_robomimic_memory_gate_repro/gpu_pip.conf` 到新 GPU 的 `~/.config/pip/pip.conf`。
 - 如果 `python3 -m pip config debug` 看到 `/etc/xdg/pip/pip.conf`、`/etc/pip.conf` 或 site config 里仍有公网 `extra-index-url`，必须先移除；否则 GPU 离线安装可能会等待公网源超时。
+- 仿真 ckpt 根目录：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/checkpoints`。当前已下载并校验 RoboMimic `*_diffusion_gated.ckpt` / `*_memory_gate.ckpt` 和 Mikasa `*_diffusion_memory.ckpt`，共 15 个文件。
+- 直接下载到 3fs 可能触发 Hugging Face consistency check 失败；稳定流程是 CPU 本地盘下载完整文件，再校验大小并复制到 3fs。
+- 隔离 venv 根目录：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-envs/task003_robomimic_memory_gate_repro`。当前分为 `imitation-py312`、`mujoco-py312`、`mikasa-py312`，不要和系统 Python 或其他任务 venv 混用。
+- 本轮环境使用 Python 3.12，因为 CPU/GPU 节点仅提供 Python 3.12；README 的 conda Python 3.10/3.11 pin 不能原样用 venv 复现。
+- `mujoco-py312` 使用 `ray==2.31.0` 替代 README/env 的 `ray==2.9.0`，原因是 `ray==2.9.0` 不支持 Python 3.12。
+- `mikasa-py312` 必须使用 PyPI beta：`mani-skill==3.0.0b15`、`sapien==3.0.0b1`、`pytorch-kinematics==0.7.4`；内部镜像只有 stable 版，stable 版缺 `mani_skill.agents.robots.xmate3`。
+- GPU 验证：`10.100.2.39:23494` 上 3 个 venv 均可通过关键 import；`imitation-py312` 和 `mujoco-py312` 使用 `torch==2.8.0+cu128`，`mikasa-py312` 使用 `torch==2.10.0+cu128`，均可见 8 张 H200。

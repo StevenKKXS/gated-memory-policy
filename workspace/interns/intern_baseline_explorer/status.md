@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 3 |
-| 最近进展 | 已在 GPU 节点写入内部 pip 镜像配置，并将可复用 pip.conf 模板记录到任务目录。 |
+| Session | 4 |
+| 最近进展 | 已在 CPU 侧下载 RoboMimic/Mikasa gated-memory 仿真 ckpt 到 3fs，并完成 3 个隔离 venv 的 CPU/GPU import 验证。 |
