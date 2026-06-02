@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=5 -->
+<!-- METADATA:SESSION=6 -->
 
 ## Session 1 - 2026-06-02
 
@@ -75,3 +75,16 @@
   - `mujoco-env/env.yaml` 推荐 conda `mujoco-env` + Python 3.10.15 + `ray-core=2.9.0`；当前 `mujoco-py312` 为 Python 3.12.3，`ray==2.31.0`，原因是 `ray==2.9.0` 不支持 Python 3.12。MuJoCo/torch/robosuite/robomimic 关键版本已验证：`mujoco==3.3.5`、`torch==2.8.0`、submodule `robosuite==1.5.1`、`robomimic==0.4.0`。
   - `mikasa-robo-env/env.yml` 推荐 conda `mikasa` + Python 3.11.15；当前 `mikasa-py312` 为 Python 3.12.3，大多数关键 pip pin 与推荐一致，包括 `torch==2.10.0`、`transformers==5.3.0`、`mani-skill==3.0.0b15`、`sapien==3.0.0b1`。
 - 明确环境职责：`imitation-learning-policies` 是训练/推理服务环境，服务 MemMimic、RoboMimic、Mikasa-Robo 以及 real；`mujoco-env` 是 MemMimic + RoboMimic 的 MuJoCo simulator；`mikasa-robo-env` 是 Mikasa-Robo 的 ManiSkill simulator。
+
+## Session 6 - 2026-06-02
+
+- 回答主管关于“能否用 venv 全部对齐 GitHub 推荐环境”的可行性问题，本轮只做分析，不改现有环境。
+- 实测 CPU host 和 GPU 节点 `10.100.2.39:23494` 都只有 `/usr/bin/python3.12` / Python 3.12.3；未发现 `python3.10`、`python3.11`、conda、mamba、micromamba、uv、pyenv。
+- 结论：现有 venv 不能原地把 Python 3.12 改成推荐的 3.10/3.11；`venv` 绑定创建时使用的解释器。要对齐，必须先提供 Python 3.10/3.11 解释器，再用对应解释器创建新 venv。
+- 推荐对齐目标：
+  - `imitation`：新增 `imitation-py310`，Python 3.10，按 `imitation-learning-policies/env.yaml` 安装。
+  - `mujoco-env`：新增 `mujoco-py310`，Python 3.10.15，按 `mujoco-env/env.yaml` 安装；届时可把当前为适配 Python 3.12 才升级的 `ray==2.31.0` 降回推荐 `ray-core==2.9.0`。
+  - `mikasa`：新增 `mikasa-py311`，Python 3.11.15，按 `mikasa-robo-env/env.yml` 安装。
+- 可行路径：在 CPU 侧下载或构建 portable CPython 3.10/3.11 到 3fs，再在 GPU 使用这些解释器创建 venv；所有 pip 配置继续使用内部镜像 `http://10.100.197.13/simple/`，公网下载放在 CPU 侧完成。
+- 风险：venv 能做到 Python 和大部分 pip 包版本对齐，但不能完全复刻 conda solver / conda channel 里的二进制包选择；因此目标应定义为“功能和关键版本对齐”，不是 bit-identical conda 环境。
+- 空间可行：3fs `/mnt/3fs1` 约 883T 可用；当前 3 个 py312 venv 总量约 24GB，保留旧环境并新增对齐 venv 的空间风险低。

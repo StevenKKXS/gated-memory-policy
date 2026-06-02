@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=5 -->
+<!-- METADATA:SESSION=6 -->
 
 ## 记录规则
 
@@ -38,3 +38,4 @@
 - 仓库 README 明确 simulation benchmark family 是 Memimic/MemMimic、RoboMimic、Mikasa-Robo；MemMimic 存在，HF checkpoint/dataset 路径使用 `memmimic/**`。
 - 环境职责：`imitation-learning-policies` 是 policy 训练/推理服务环境，不是仿真器；`mujoco-env` 负责 MemMimic + RoboMimic 的 MuJoCo 仿真；`mikasa-robo-env` 负责 Mikasa-Robo 的 ManiSkill 仿真。
 - 当前环境相对推荐 env 的最大偏移是 Python/环境管理方式：官方使用 conda，推荐 `imitation` Python 3.10、`mujoco-env` Python 3.10.15、`mikasa` Python 3.11.15；本任务使用 venv 且三套均为 Python 3.12.3。
+- venv 不能原地修改 Python minor version；要对齐 GitHub 推荐 Python，必须先安装/放置对应解释器，再创建新 venv。建议新增 `imitation-py310`、`mujoco-py310`、`mikasa-py311`，保留已跑通的 `*-py312` 作为回滚环境。
