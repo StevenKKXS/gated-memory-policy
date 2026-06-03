@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=7 -->
+<!-- METADATA:SESSION=8 -->
 
 ## 记录规则
 
@@ -77,3 +77,14 @@
 - 统一 GMP 复现结果表：
   - Markdown：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.md`
   - JSON：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.json`
+- MemMimic gated ckpt 路径：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/checkpoints/memmimic`。当前 HF model repo 只发现 4 个 `memmimic/*diffusion_gated.ckpt`：`fling_cloth_diffusion_gated.ckpt`、`pick_and_match_color_diffusion_gated.ckpt`、`pick_and_place_back_diffusion_gated.ckpt`、`push_cube_diffusion_gated.ckpt`；未发现 `pick_and_match_color_rand_delay_diffusion_gated.ckpt`。
+- MemMimic 使用 `mujoco-py310` + `imitation-py310` 的 queue workflow 更稳定：先启动多个 `scripts/run_policy_server.py --server_endpoint tcp://localhost:<port>`，再启动 `scripts/serve_remote_env.py server.policy_server_address=tcp://localhost:<port> server.rollout_episode_num=<N> server.env_num=<M>`，最后用 `scripts/start_multi_gpu_mixed_policy_rollout.py <ckpt_dir> --filter_str=diffusion_gated --num_servers=<K> --server_name=localhost --start_port=<port>` 分发 ckpt。直接 `--ckpt_path` smoke 的 readiness 日志判断容易误导，清理顺序不当会让 rollout 等不到 policy。
+- MemMimic 全量复现命令关键环境变量与 RoboMimic 一致：
+  - `HF_HOME=/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/hf-home`
+  - `TRANSFORMERS_OFFLINE=1`
+  - `HF_HUB_OFFLINE=1`
+  - `PYTHONPATH=/mnt/3fs1/data/tingwen.du/gated-memory-policy/imitation-learning-policies`
+- MemMimic 4-task 100 episode 复现结果目录：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_full_gated_env20_20260603_014506`。结果：`fling_cloth=0.78`、`pick_and_match_color=1.0`、`pick_and_place_back=0.97`、`push_cube=0.98`。
+- Session 8 结果表：
+  - MemMimic 单独表：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_gated_results.md`
+  - 统一表：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/gmp_results.md`

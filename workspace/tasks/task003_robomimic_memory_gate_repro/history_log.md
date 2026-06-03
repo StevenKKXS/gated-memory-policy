@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=7 -->
+<!-- METADATA:SESSION=8 -->
 
 ## Session 1 - 2026-06-02
 
@@ -131,3 +131,20 @@
   - `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.md`
   - `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session7/gmp_results.json`
 - 评测结束后检查 GPU：`run_policy_server.py`、`rollout_policy.py`、`mikasa_eval.py`、Ray worker 均无残留，8 张 GPU 显存回到约 `1 MiB`。
+
+## Session 8 - 2026-06-03
+
+- 继续按主管要求跑 MemMimic/GMP；CPU 侧通过 Hugging Face model repo `yihuai-gao/gated-memory-policy` 确认 MemMimic `diffusion_gated` ckpt 只有 4 个：`fling_cloth`、`pick_and_match_color`、`pick_and_place_back`、`push_cube`。仓库中存在 `pick_and_match_color_rand_delay` 的 dense/sparse memory ckpt，但未发现 rand-delay 的 `diffusion_gated` ckpt。
+- CPU 本地盘下载 4 个 MemMimic gated ckpt，再复制到 3fs：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/checkpoints/memmimic`。ckpt metadata：`fling_cloth` epoch 14 / global_step 22874，`pick_and_match_color` epoch 5 / global_step 5489，`pick_and_place_back` epoch 13 / global_step 12809，`push_cube` epoch 23 / global_step 36575。
+- 直接 `run_policy_server.py --ckpt_path ...` + `rollout_policy.py push_cube` smoke 因 readiness 日志判断和手动清理顺序未形成有效 rollout，失败目录为 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_smoke_push_cube_20260603_013605`。
+- 改用 queue workflow 后 MemMimic smoke 跑通：`push_cube` 2 episodes，`env_num=2`，端口 `39101`，目录 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_smoke_queue_push_cube_20260603_014231`，success rate `1.0`。
+- MemMimic 4-task 全量评测使用 `imitation-py310` + `mujoco-py310`，4 个 policy server 端口 `39120-39123`，GPU0-3，`server.rollout_episode_num=100`，`server.env_num=20`，run 目录 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_full_gated_env20_20260603_014506`。
+- MemMimic 100 episode 结果：
+  - `fling_cloth` epoch 14，success rate `0.78`。
+  - `pick_and_match_color` epoch 5，success rate `1.0`。
+  - `pick_and_place_back` epoch 13，success rate `0.97`。
+  - `push_cube` epoch 23，success rate `0.98`。
+- 结果表已生成：
+  - MemMimic 单独表：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_gated_results.md` 和 `.json`。
+  - Session 8 统一表：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/gmp_results.md` 和 `.json`；同内容另存为 `gmp_results_with_memmimic.md/json`。
+- 评测结束后检查 GPU：`run_policy_server.py`、`serve_remote_env.py`、`start_multi_gpu_mixed_policy_rollout.py` 均无残留，8 张 GPU 显存回到约 `1 MiB`。
