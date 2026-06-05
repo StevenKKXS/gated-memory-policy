@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=11 -->
+<!-- METADATA:SESSION=12 -->
 
 ## Session 1 - 2026-06-02
 
@@ -176,3 +176,10 @@
 - 代码映射：`shell_scripts/train_sim.sh` 选择 benchmark/task/policy，`shell_scripts/train_policy.sh` 调 `accelerate launch scripts/train_policy.py`，`scripts/train_policy.py` 通过 Hydra compose task/policy/dataset config 并实例化 `BaseWorkspace`，`BaseWorkspace` 构造 train/val dataloader 和 EMA model 后调用 trainer。
 - 数据映射：HF datasets 按 `memmimic/**`、`robomimic/**`、`iphumi/**`、`real_world/**` 下载；MuJoCo 数据使用 episode-wise zarr，每个 episode 包含相机、tcp pose、gripper、action pose、action gripper 等字段。代码将 pose+gripper 合成 `robot0_10d` / `action0_10d`，memory/gated 使用 `MujocoMultiTrajDataset` 从同一 episode 采样多段间隔 chunk。
 - 自训建议：先定向下载一个任务的数据集，例如 MemMimic `pick_and_place_back`；先训练 `diffusion_memory_transformer` 并 eval；如需要 gated，再准备 no-memory 与 memory ckpt，生成 gate labels，训练 `memory_gate.ckpt`，最后训练/加载 `diffusion_gated_transformer`。
+
+## Session 12 - 2026-06-05
+
+- 回答主管关于当前 GitHub 仓库来源和可见性的问题。
+- 本地 `origin` 为 `git@github.com:StevenKKXS/gated-memory-policy.git`，fetch/push 都指向同一个仓库。
+- `gh repo view StevenKKXS/gated-memory-policy` 返回 `isFork=true`、`visibility=PUBLIC`、`isPrivate=false`，parent 为 `real-stanford/gated-memory-policy`。
+- 当前工作分支为 `intern_baseline_explorer/task003_robomimic_memory_gate_repro`，分支跟踪 `origin/intern_baseline_explorer/task003_robomimic_memory_gate_repro`；继续按项目规则禁止直接 push master/main，所有维护通过当前任务分支和 PR #3。

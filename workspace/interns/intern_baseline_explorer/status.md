@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 11 |
-| 最近进展 | 已梳理 GMP training 的论文逻辑和代码路径：训练数据是 episode-wise zarr/HF dataset，memory/gated policy 使用同一 episode 内多段 action chunk 组成 multi-traj batch；训练入口是 `imitation-learning-policies/shell_scripts/train_sim.sh` / `scripts/train_policy.py`，gate 需要离线生成标签并单独训练后冻结用于 gated policy。 |
+| Session | 12 |
+| 最近进展 | 已确认当前本地 `origin` 指向 `git@github.com:StevenKKXS/gated-memory-policy.git`，GitHub 元信息显示该仓库为 PUBLIC fork，parent 为 `real-stanford/gated-memory-policy`；当前工作分支仍是 `intern_baseline_explorer/task003_robomimic_memory_gate_repro`。 |

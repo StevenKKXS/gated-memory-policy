@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=11 -->
+<!-- METADATA:SESSION=12 -->
 
 ## 记录规则
 
@@ -95,3 +95,4 @@
 - GMP 训练数据形态：HF dataset 下载到 `data/datasets/<benchmark>` 后由 `BaseDataset`/`EpisodicDataset` 读 episode-wise zarr。MuJoCo source 字段包括 `third_person_camera`、`robot0_tcp_xyz_wxyz`、`robot0_gripper_width`、`action0_tcp_xyz_wxyz`、`action0_gripper_width`，代码合成为 `robot0_10d` / `action0_10d`。memory/gated policy 使用 `MujocoMultiTrajDataset`，从同一 episode 采样 `traj_num=max_history_len+1` 的多个 action chunk，默认 chunk 间隔 8 step，action chunk 长度 16。
 - GMP 训练代码路径：`shell_scripts/train_sim.sh` -> `shell_scripts/train_policy.sh` -> `scripts/train_policy.py` -> `BaseWorkspace` -> `PolicyTrainer`。`diffusion_memory_transformer.yaml` 使用 `HistoryDenoisingPolicy` 和 `MemoryTransformer`；`diffusion_gated_transformer.yaml` 在 memory policy 上加 `common/memory_gate.yaml`。
 - Memory gate 训练路径：论文/project page 建议离线校准 gate，代码对应 `scripts/generate_gate_labels.py` 先 eval no-memory 与 with-memory ckpt 并 merge error statistics，`scripts/train_memory_gate.py` / `MemoryGateTrainer` 读取 `with_mem_errors`、`no_mem_errors` 生成 `gate_label`，再训练 `MemoryGate`。训练 gated policy 时 `train_sim.sh` 会为 gated policy 追加 `+workspace.model.memory_gate.ckpt_path=data/checkpoints/${benchmark_name}/${task_name}_memory_gate.ckpt`。
+- 当前代码 remote 是主管 fork 给任务使用的仓库：`origin` fetch/push 均为 `git@github.com:StevenKKXS/gated-memory-policy.git`。GitHub 元信息显示该 repo 为 PUBLIC fork，parent 为 `real-stanford/gated-memory-policy`；任务开发只 push 到 `intern_baseline_explorer/task003_robomimic_memory_gate_repro` 分支，通过 PR #3 合入，禁止直接 push master/main。
