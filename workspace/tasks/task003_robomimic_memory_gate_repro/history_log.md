@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=10 -->
+<!-- METADATA:SESSION=11 -->
 
 ## Session 1 - 2026-06-02
 
@@ -168,3 +168,11 @@
   - 阶段 3：使用已有 `pick_and_place_back_memory_gate.ckpt` 或先训练 memory gate，再跑 `diffusion_gated_transformer` 训练；每个可用 checkpoint 做小规模 eval 对齐 Session 8 的 rollout workflow。
   - 阶段 4：副节点同步跑短周期或可中断实验，例如 `push_cube`、`robomimic_square_ph`、低 epoch gated training 或 memory gate 训练验证；输出目录和 pid/log 单独标注为 interruptible。
 - 风险记录：官方脚本依赖 conda 激活，但本任务使用 venv；执行时需要改写为直接调用 `imitation-py310/bin/python` / `imitation-py310/bin/accelerate` 或导出 `CONDA_PREFIX` 兼容脚本。训练数据集约 325GB，全量下载需先按 task 定向下载，避免占用和等待过大。
+
+## Session 11 - 2026-06-05
+
+- 结合论文/project page 和本地代码，回答主管关于 GMP 训练数据、训练代码和自己训练流程的问题。
+- 结论：论文层面 GMP 是监督式 imitation/diffusion policy 训练，不是在线 RL；核心是对需要记忆的任务把当前观测/action chunk 与同 episode 历史 chunk 组成训练样本，并用 cross-attention 读历史。gate 不是推荐直接端到端一起训练，而是通过 no-memory 与 memory policy 在 held-out 数据上的逐时刻 action error 差异生成标签，再训练 memory gate，最后冻结 gate 训练/使用 gated policy。
+- 代码映射：`shell_scripts/train_sim.sh` 选择 benchmark/task/policy，`shell_scripts/train_policy.sh` 调 `accelerate launch scripts/train_policy.py`，`scripts/train_policy.py` 通过 Hydra compose task/policy/dataset config 并实例化 `BaseWorkspace`，`BaseWorkspace` 构造 train/val dataloader 和 EMA model 后调用 trainer。
+- 数据映射：HF datasets 按 `memmimic/**`、`robomimic/**`、`iphumi/**`、`real_world/**` 下载；MuJoCo 数据使用 episode-wise zarr，每个 episode 包含相机、tcp pose、gripper、action pose、action gripper 等字段。代码将 pose+gripper 合成 `robot0_10d` / `action0_10d`，memory/gated 使用 `MujocoMultiTrajDataset` 从同一 episode 采样多段间隔 chunk。
+- 自训建议：先定向下载一个任务的数据集，例如 MemMimic `pick_and_place_back`；先训练 `diffusion_memory_transformer` 并 eval；如需要 gated，再准备 no-memory 与 memory ckpt，生成 gate labels，训练 `memory_gate.ckpt`，最后训练/加载 `diffusion_gated_transformer`。

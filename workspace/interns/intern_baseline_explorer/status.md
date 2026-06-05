@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 10 |
-| 最近进展 | 已制定 GMP training 复现计划：保留已验证的 `10.100.2.39:23494` 作为主 8 卡训练节点，先把环境复刻到 `10.100.4.23:21492`，新节点作为可中断副实验节点；训练优先从 MemMimic `pick_and_place_back` 官方默认配置做 smoke 和多卡主实验。 |
+| Session | 11 |
+| 最近进展 | 已梳理 GMP training 的论文逻辑和代码路径：训练数据是 episode-wise zarr/HF dataset，memory/gated policy 使用同一 episode 内多段 action chunk 组成 multi-traj batch；训练入口是 `imitation-learning-policies/shell_scripts/train_sim.sh` / `scripts/train_policy.py`，gate 需要离线生成标签并单独训练后冻结用于 gated policy。 |
