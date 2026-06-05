@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=8 -->
+<!-- METADATA:SESSION=9 -->
 
 ## Session 1 - 2026-06-02
 
@@ -148,3 +148,9 @@
   - MemMimic 单独表：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_gated_results.md` 和 `.json`。
   - Session 8 统一表：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/gmp_results.md` 和 `.json`；同内容另存为 `gmp_results_with_memmimic.md/json`。
 - 评测结束后检查 GPU：`run_policy_server.py`、`serve_remote_env.py`、`start_multi_gpu_mixed_policy_rollout.py` 均无残留，8 张 GPU 显存回到约 `1 MiB`。
+
+## Session 9 - 2026-06-05
+
+- 回答主管关于本任务使用 GPU 资源的问题：本任务复现使用 GPU 节点 `10.100.2.39`，SSH 端口 `23494`，节点为 8 张 NVIDIA H200。
+- MemMimic 全量复现使用该节点 GPU0-3，policy server 端口 `39120-39123`；RoboMimic smoke/全量复现也在该节点运行；Mikasa-Robo 全量复现使用该节点 GPU0-4。
+- 上一轮 Session 8 结束时已确认该 GPU 节点无 `run_policy_server.py`、`serve_remote_env.py`、`start_multi_gpu_mixed_policy_rollout.py` 残留，8 张 GPU 显存回到约 `1 MiB`。

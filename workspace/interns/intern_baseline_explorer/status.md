@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 8 |
-| 最近进展 | 已下载 MemMimic 4 个 `diffusion_gated` ckpt，完成 queue smoke 和 4-task 100 episode 复现；MemMimic 表在 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_gated_results.md`，统一表在 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/gmp_results.md`。 |
+| Session | 9 |
+| 最近进展 | 已确认本任务使用 GPU 资源为 `10.100.2.39:23494` 的 8x NVIDIA H200 节点；MemMimic 全量复现使用 GPU0-3，RoboMimic 使用该节点运行，Mikasa-Robo 全量复现使用 GPU0-4。 |
