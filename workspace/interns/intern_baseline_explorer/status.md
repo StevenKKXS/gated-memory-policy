@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 9 |
-| 最近进展 | 已确认本任务使用 GPU 资源为 `10.100.2.39:23494` 的 8x NVIDIA H200 节点；MemMimic 全量复现使用 GPU0-3，RoboMimic 使用该节点运行，Mikasa-Robo 全量复现使用 GPU0-4。 |
+| Session | 10 |
+| 最近进展 | 已制定 GMP training 复现计划：保留已验证的 `10.100.2.39:23494` 作为主 8 卡训练节点，先把环境复刻到 `10.100.4.23:21492`，新节点作为可中断副实验节点；训练优先从 MemMimic `pick_and_place_back` 官方默认配置做 smoke 和多卡主实验。 |

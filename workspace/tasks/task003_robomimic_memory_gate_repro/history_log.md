@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=9 -->
+<!-- METADATA:SESSION=10 -->
 
 ## Session 1 - 2026-06-02
 
@@ -154,3 +154,17 @@
 - 回答主管关于本任务使用 GPU 资源的问题：本任务复现使用 GPU 节点 `10.100.2.39`，SSH 端口 `23494`，节点为 8 张 NVIDIA H200。
 - MemMimic 全量复现使用该节点 GPU0-3，policy server 端口 `39120-39123`；RoboMimic smoke/全量复现也在该节点运行；Mikasa-Robo 全量复现使用该节点 GPU0-4。
 - 上一轮 Session 8 结束时已确认该 GPU 节点无 `run_policy_server.py`、`serve_remote_env.py`、`start_multi_gpu_mixed_policy_rollout.py` 残留，8 张 GPU 显存回到约 `1 MiB`。
+
+## Session 10 - 2026-06-05
+
+- 根据主管要求先给出计划，不启动环境复刻或训练进程。
+- 新增目标 GPU：`10.100.4.23`，SSH 端口 `21492`。计划先验证 SSH、3fs 挂载、GPU 型号/数量、pip 内部镜像、CUDA/PyTorch 可见性，再复用 3fs 上已有代码、portable Python、venv、HF cache、checkpoints、ManiSkill assets 和 SAPIEN PhysX GPU 库。
+- 训练节点分工计划：`10.100.2.39:23494` 作为主 8 卡节点，因为该节点已完成 RoboMimic、Mikasa-Robo、MemMimic 的 smoke/全量 eval；`10.100.4.23:21492` 作为可中断副节点，运行同任务的短周期 smoke、低 epoch 训练、ablation 或 checkpoint 续跑验证，被停止时不影响主节点结果链路。
+- 结合仓库 README 和 `imitation-learning-policies/shell_scripts/train_sim.sh`，GMP simulation training 官方入口为 `shell_scripts/train_sim.sh`，默认配置是 MemMimic `pick_and_place_back` + `diffusion_memory_transformer`；`diffusion_gated_transformer` 需要 `data/checkpoints/<benchmark>/<task>_memory_gate.ckpt`。
+- 训练复现分阶段计划：
+  - 阶段 0：在 CPU/3fs 准备数据集，优先下载 `memmimic/pick_and_place_back` 和必要 normalizer；若训练 smoke 缺数据，再按官方 dataset repo 补齐目标 task。
+  - 阶段 1：在主节点用 `imitation-py310` 单卡跑 `+workspace.trainer.debug=True` smoke，验证 dataloader、SigLIP 离线加载、wandb/offline 日志、checkpoint 保存。
+  - 阶段 2：在主节点 8 卡跑 `diffusion_memory_transformer` 的 MemMimic `pick_and_place_back` 主训练，输出目录放到 3fs session10 training runs。
+  - 阶段 3：使用已有 `pick_and_place_back_memory_gate.ckpt` 或先训练 memory gate，再跑 `diffusion_gated_transformer` 训练；每个可用 checkpoint 做小规模 eval 对齐 Session 8 的 rollout workflow。
+  - 阶段 4：副节点同步跑短周期或可中断实验，例如 `push_cube`、`robomimic_square_ph`、低 epoch gated training 或 memory gate 训练验证；输出目录和 pid/log 单独标注为 interruptible。
+- 风险记录：官方脚本依赖 conda 激活，但本任务使用 venv；执行时需要改写为直接调用 `imitation-py310/bin/python` / `imitation-py310/bin/accelerate` 或导出 `CONDA_PREFIX` 兼容脚本。训练数据集约 325GB，全量下载需先按 task 定向下载，避免占用和等待过大。

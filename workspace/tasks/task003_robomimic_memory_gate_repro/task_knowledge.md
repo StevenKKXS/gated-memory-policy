@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=9 -->
+<!-- METADATA:SESSION=10 -->
 
 ## 记录规则
 
@@ -88,3 +88,7 @@
 - Session 8 结果表：
   - MemMimic 单独表：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/memmimic_gated_results.md`
   - 统一表：`/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/eval_runs/session8/gmp_results.md`
+- 新 GPU 节点计划：`10.100.4.23:21492`。先按已有流程验证 SSH、`/mnt/3fs1/data/tingwen.du` 挂载、8 卡 CUDA 可见性、pip 镜像 `http://10.100.197.13/simple/`、`imitation-py310` / `mujoco-py310` / `mikasa-py311` import 和离线 HF cache。主训练节点仍优先用已验证的 `10.100.2.39:23494`，新节点作为可中断副实验节点。
+- GMP simulation training 官方入口在 `imitation-learning-policies/shell_scripts/train_sim.sh`；底层 `train_policy.sh` 使用 `accelerate launch` 多卡训练，Hydra 配置入口为 `imitation_learning/configs/train_policy.yaml`。默认 task 是 MemMimic `pick_and_place_back`，默认 policy 是 `diffusion_memory_transformer`；改成 `diffusion_gated_transformer` 时脚本会追加 `+workspace.model.memory_gate.ckpt_path=data/checkpoints/${benchmark_name}/${task_name}_memory_gate.ckpt`。
+- 训练输出默认在 `imitation-learning-policies/data/${task_name}/${date_str}/${time_str}_${run_name}`；本任务应覆盖到 3fs 运行目录，例如 `/mnt/3fs1/data/tingwen.du/gated-memory-policy-data/training_runs/session10/<node>/<run_name>`，避免写到 repo 工作区或本地盘。
+- 官方 training 默认需要数据集：README 标注全部 dataset 约 325GB，MemMimic 约 141GB，RoboMimic 约 184GB；训练复现应先按 task 定向下载到 3fs，优先 `memmimic/pick_and_place_back`，再扩展到 `push_cube` 或 RoboMimic。
