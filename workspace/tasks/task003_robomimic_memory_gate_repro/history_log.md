@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=13 -->
+<!-- METADATA:SESSION=14 -->
 
 ## Session 1 - 2026-06-02
 
@@ -191,3 +191,10 @@
 - 代码实现映射：no-memory diffusion/flow 基于 `BaseDenoisingPolicy`，memory/gated/flow-memory 基于 `HistoryDenoisingPolicy` + `MemoryTransformer`，BC-RNN 基于 `BCRNNPolicy`；`compose_hydra_config` 根据 policy 名称自动选择 single-traj 或 multi-traj dataset。
 - `diffusion_unet.yaml` 配置存在且文件头标注 transformer policy 后未再测试；当前 `policies/` 目录未找到对应 `DiffusionPolicy` 类，因此不建议作为当前复现 baseline。
 - `mujoco-env/third_party/robomimic` submodule 自带 BC、BC-RNN、HBC、BCQ、CQL、IQL、IRIS、TD3-BC 等算法实现，但它们属于 third-party robomimic 训练体系，不是 GMP `train_sim.sh` 的主训练入口。
+
+## Session 14 - 2026-06-06
+
+- 回答主管关于 RoboMimic 和 RoboSuite 版本的问题。
+- 代码声明版本：`mujoco-env/third_party/robomimic/robomimic/__init__.py` 和 `setup.py` 均为 `robomimic==0.4.0`；`mujoco-env/third_party/robosuite/robosuite/__init__.py` 和 `setup.py` 均为 `robosuite==1.5.1`。
+- `mujoco-py310` 运行环境 import 和 `pip show` 均确认：`robomimic==0.4.0`、`robosuite==1.5.1`，两者都是 editable install，来源为 3fs 代码目录下的 submodule。
+- submodule commit：RoboMimic `59ecd4048b91595b61cbcc2f3e4d9d666e4d4c04`，`git submodule status` 显示 `v0.4.0-4-g59ecd40`；RoboSuite `77a4751233c29456a5381209e30dd0dbf39a6557`，显示 `v1.5.1-39-g77a47512`。

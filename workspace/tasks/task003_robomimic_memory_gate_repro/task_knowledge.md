@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - Task Knowledge
 
-<!-- METADATA:SESSION=13 -->
+<!-- METADATA:SESSION=14 -->
 
 ## 记录规则
 
@@ -97,3 +97,4 @@
 - Memory gate 训练路径：论文/project page 建议离线校准 gate，代码对应 `scripts/generate_gate_labels.py` 先 eval no-memory 与 with-memory ckpt 并 merge error statistics，`scripts/train_memory_gate.py` / `MemoryGateTrainer` 读取 `with_mem_errors`、`no_mem_errors` 生成 `gate_label`，再训练 `MemoryGate`。训练 gated policy 时 `train_sim.sh` 会为 gated policy 追加 `+workspace.model.memory_gate.ckpt_path=data/checkpoints/${benchmark_name}/${task_name}_memory_gate.ckpt`。
 - 当前代码 remote 是主管 fork 给任务使用的仓库：`origin` fetch/push 均为 `git@github.com:StevenKKXS/gated-memory-policy.git`。GitHub 元信息显示该 repo 为 PUBLIC fork，parent 为 `real-stanford/gated-memory-policy`；任务开发只 push 到 `intern_baseline_explorer/task003_robomimic_memory_gate_repro` 分支，通过 PR #3 合入，禁止直接 push master/main。
 - Baseline 代码口径：GMP 主线是 `diffusion_gated_transformer`；作者自有 baseline/ablation 入口主要在 `imitation-learning-policies/imitation_learning/configs/workspace/policy/` 和 `shell_scripts/train_sim.sh`，包括 no-memory `diffusion_transformer` / `flow_transformer`、memory-without-gate `diffusion_memory_transformer`、`flow_memory_transformer`、long/mid-history transformer 系列、`bc_rnn_memory`、continuous/binary gate ablation。`diffusion_unet.yaml` 是遗留配置，引用的 `DiffusionPolicy` 类当前未在 `policies/` 目录发现。`mujoco-env/third_party/robomimic` 另有 robomimic 原生 BC、BC-RNN、HBC、BCQ、CQL、IQL、IRIS、TD3-BC 实现，但不属于 GMP Hydra 主入口。
+- RoboMimic / RoboSuite 版本口径：代码与 `mujoco-py310` 环境一致，`robomimic==0.4.0`、`robosuite==1.5.1`。两者都是 editable install，来源分别为 `/mnt/3fs1/data/tingwen.du/gated-memory-policy/mujoco-env/third_party/robomimic` 和 `/mnt/3fs1/data/tingwen.du/gated-memory-policy/mujoco-env/third_party/robosuite`；submodule commits 分别为 `59ecd4048b91595b61cbcc2f3e4d9d666e4d4c04` 和 `77a4751233c29456a5381209e30dd0dbf39a6557`。
