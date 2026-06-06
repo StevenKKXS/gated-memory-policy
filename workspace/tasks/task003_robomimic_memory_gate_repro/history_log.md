@@ -1,6 +1,6 @@
 # task003_robomimic_memory_gate_repro - History Log
 
-<!-- METADATA:SESSION=12 -->
+<!-- METADATA:SESSION=13 -->
 
 ## Session 1 - 2026-06-02
 
@@ -183,3 +183,11 @@
 - 本地 `origin` 为 `git@github.com:StevenKKXS/gated-memory-policy.git`，fetch/push 都指向同一个仓库。
 - `gh repo view StevenKKXS/gated-memory-policy` 返回 `isFork=true`、`visibility=PUBLIC`、`isPrivate=false`，parent 为 `real-stanford/gated-memory-policy`。
 - 当前工作分支为 `intern_baseline_explorer/task003_robomimic_memory_gate_repro`，分支跟踪 `origin/intern_baseline_explorer/task003_robomimic_memory_gate_repro`；继续按项目规则禁止直接 push master/main，所有维护通过当前任务分支和 PR #3。
+
+## Session 13 - 2026-06-06
+
+- 回答主管关于代码库中除 GMP 外是否有 baseline 实现的问题。
+- 确认 `imitation-learning-policies/shell_scripts/train_sim.sh` 直接列出可训练 policy baseline/ablation：`diffusion_transformer` / `diffusion_transformer_large`、`flow_transformer`、`diffusion_memory_transformer`、`flow_memory_transformer`、`bc_rnn_memory`、long/mid-history diffusion transformer 系列，以及 `diffusion_continuous_gated_transformer` / `diffusion_binary_gated_transformer` ablation。
+- 代码实现映射：no-memory diffusion/flow 基于 `BaseDenoisingPolicy`，memory/gated/flow-memory 基于 `HistoryDenoisingPolicy` + `MemoryTransformer`，BC-RNN 基于 `BCRNNPolicy`；`compose_hydra_config` 根据 policy 名称自动选择 single-traj 或 multi-traj dataset。
+- `diffusion_unet.yaml` 配置存在且文件头标注 transformer policy 后未再测试；当前 `policies/` 目录未找到对应 `DiffusionPolicy` 类，因此不建议作为当前复现 baseline。
+- `mujoco-env/third_party/robomimic` submodule 自带 BC、BC-RNN、HBC、BCQ、CQL、IQL、IRIS、TD3-BC 等算法实现，但它们属于 third-party robomimic 训练体系，不是 GMP `train_sim.sh` 的主训练入口。

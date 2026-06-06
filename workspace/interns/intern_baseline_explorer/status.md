@@ -8,5 +8,5 @@
 | Status | Working |
 | Current Task | task003_robomimic_memory_gate_repro |
 | PR | https://github.com/StevenKKXS/gated-memory-policy/pull/3 |
-| Session | 12 |
-| 最近进展 | 已确认当前本地 `origin` 指向 `git@github.com:StevenKKXS/gated-memory-policy.git`，GitHub 元信息显示该仓库为 PUBLIC fork，parent 为 `real-stanford/gated-memory-policy`；当前工作分支仍是 `intern_baseline_explorer/task003_robomimic_memory_gate_repro`。 |
+| Session | 13 |
+| 最近进展 | 已梳理代码库内除 GMP gated policy 外的 baseline/ablation：作者自有入口包含 no-memory diffusion/flow transformer、memory-without-gate transformer、long/mid-history transformer、BC-RNN memory、continuous/binary gate ablation；third-party robomimic submodule 另有 BC、BC-RNN、HBC、BCQ、CQL、IQL、IRIS、TD3-BC 等算法实现。 |
