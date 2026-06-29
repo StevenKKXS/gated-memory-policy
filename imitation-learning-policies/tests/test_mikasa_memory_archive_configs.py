@@ -51,3 +51,19 @@ def test_direct_anchor_config_enables_late_cue_anchor():
     network = cfg["denoising_network_partial"]
     assert network["late_cue_anchor_enabled"] is True
     assert network["late_cue_anchor_len"] >= 1
+
+
+def test_selector_config_uses_mikasa_base_and_selector_carrier():
+    cfg = _load_yaml(POLICY_DIR / "diffusion_mikasa_visual_selector_late_anchor_memory.yaml")
+    assert "diffusion_mikasa_memory_transformer" in cfg["defaults"]
+    network = cfg["denoising_network_partial"]
+    assert network["visual_memory_carrier_type"] == "selector"
+    assert network["late_cue_anchor_enabled"] is True
+
+
+def test_gru_config_uses_mikasa_base_and_gru_carrier():
+    cfg = _load_yaml(POLICY_DIR / "diffusion_mikasa_visual_gru_late_anchor_memory.yaml")
+    assert "diffusion_mikasa_memory_transformer" in cfg["defaults"]
+    network = cfg["denoising_network_partial"]
+    assert network["visual_memory_carrier_type"] == "gru"
+    assert network["late_cue_anchor_enabled"] is True

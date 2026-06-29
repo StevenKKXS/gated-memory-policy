@@ -1424,6 +1424,7 @@ class MikasaMemoryTransformer(ConditionalTransformer):
         visual_memory_carrier_max_len: int = 64,
         visual_memory_carrier_hidden_dim: int | None = None,
         visual_memory_carrier_num_layers: int = 1,
+        visual_memory_carrier_num_heads: int = 8,
         visual_memory_carrier_dropout: float = 0.0,
         visual_memory_carrier_force_zero: bool = False,
         state_token_pre_action_obs_update_in_training_enabled: bool = False,
@@ -1688,6 +1689,7 @@ class MikasaMemoryTransformer(ConditionalTransformer):
         self.visual_memory_carrier_type: str = visual_memory_carrier_type
         assert self.visual_memory_carrier_type in (
             "",
+            "selector",
             "gru",
         ), f"Unknown visual_memory_carrier_type: {self.visual_memory_carrier_type}"
         self.visual_memory_carrier_enabled: bool = (
@@ -1737,19 +1739,29 @@ class MikasaMemoryTransformer(ConditionalTransformer):
         self.visual_memory_carrier: nn.Module | None = None
         if self.visual_memory_carrier_enabled:
             from imitation_learning.models.visual_memory_carriers import (
+                LearnedLateCueSelector,
                 VisualGRUMemoryCarrier,
             )
 
             assert self.history_img_features_projector is not None, (
                 "visual memory carrier requires history image features"
             )
-            self.visual_memory_carrier = VisualGRUMemoryCarrier(
-                feature_dim=self.history_img_features_dim,
-                hidden_dim=visual_memory_carrier_hidden_dim,
-                memory_token_num=self.visual_memory_carrier_token_num,
-                num_layers=visual_memory_carrier_num_layers,
-                dropout=visual_memory_carrier_dropout,
-            )
+            if self.visual_memory_carrier_type == "selector":
+                self.visual_memory_carrier = LearnedLateCueSelector(
+                    feature_dim=self.history_img_features_dim,
+                    memory_token_num=self.visual_memory_carrier_token_num,
+                    max_history_len=self.visual_memory_carrier_max_len,
+                    num_heads=visual_memory_carrier_num_heads,
+                    dropout=visual_memory_carrier_dropout,
+                )
+            elif self.visual_memory_carrier_type == "gru":
+                self.visual_memory_carrier = VisualGRUMemoryCarrier(
+                    feature_dim=self.history_img_features_dim,
+                    hidden_dim=visual_memory_carrier_hidden_dim,
+                    memory_token_num=self.visual_memory_carrier_token_num,
+                    num_layers=visual_memory_carrier_num_layers,
+                    dropout=visual_memory_carrier_dropout,
+                )
         if (
             self.state_token_memory_enabled
             and not self.state_token_update_include_action_history

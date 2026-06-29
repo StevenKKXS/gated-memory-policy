@@ -1,0 +1,29 @@
+defaults:
+  - diffusion_mikasa_memory_transformer
+  - _self_
+
+trainable_param_keywords:
+  - visual_memory_carrier
+  - late_cue_action_prehead_adapter
+  - denoising_network.blocks.14
+  - denoising_network.blocks.15
+
+denoising_network_partial:
+  late_cue_adapter_enabled: false
+  late_cue_anchor_enabled: true
+  late_cue_anchor_len: 1
+  late_cue_anchor_causal_mask: false
+  late_cue_action_prehead_adapter_enabled: true
+  late_cue_action_prehead_adapter_gate_init_bias: 0.0
+  late_cue_action_prehead_adapter_out_init_gain: 0.005
+  late_cue_action_prehead_adapter_residual_scale: 0.5
+  visual_memory_carrier_type: selector
+  visual_memory_carrier_token_num: 1
+  visual_memory_carrier_max_len: 64
+  visual_memory_carrier_num_heads: 8
+  visual_memory_carrier_dropout: 0.0
+  visual_memory_carrier_force_zero: false
+  record_data_entries:
+    - late_cue_action_prehead_adapter_gate
+    - late_cue_action_prehead_adapter_valid_ratio
+    - late_cue_action_prehead_adapter_delta_norm
