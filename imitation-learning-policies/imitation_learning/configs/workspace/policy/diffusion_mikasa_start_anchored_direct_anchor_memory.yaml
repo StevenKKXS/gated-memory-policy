@@ -1,0 +1,20 @@
+defaults:
+  - diffusion_mikasa_memory_transformer
+  - _self_
+
+trainable_param_keywords:
+  - late_cue_action_prehead_adapter
+
+denoising_network_partial:
+  late_cue_adapter_enabled: false
+  late_cue_anchor_enabled: true
+  late_cue_anchor_len: 1
+  late_cue_anchor_causal_mask: false
+  late_cue_action_prehead_adapter_enabled: true
+  late_cue_action_prehead_adapter_gate_init_bias: -2.0
+  late_cue_action_prehead_adapter_out_init_gain: 0.001
+  late_cue_action_prehead_adapter_residual_scale: 0.1
+  record_data_entries:
+    - late_cue_action_prehead_adapter_gate
+    - late_cue_action_prehead_adapter_valid_ratio
+    - late_cue_action_prehead_adapter_delta_norm
