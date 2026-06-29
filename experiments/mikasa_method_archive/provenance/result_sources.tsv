@@ -1,0 +1,31 @@
+method	task	score	source_path	protocol_note
+no_memory	RememberColor3-v0	0.450	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact seed42 no-memory score.
+no_memory	RememberColor5-v0	0.300	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact seed42 no-memory score.
+no_memory	RememberColor9-v0	0.070	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact seed42 no-memory score.
+no_memory	InterceptMedium-v0	0.810	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact seed42 no-memory score.
+no_memory	ShellGameTouch-v0	0.410	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact seed42 no-memory score.
+no_memory	MEAN_5TASK	0.408	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Mean over five compact seed42 tasks.
+top1_retrieval	RememberColor3-v0	0.590	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact top1 retrieval score.
+top1_retrieval	RememberColor5-v0	0.240	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact top1 retrieval score.
+top1_retrieval	RememberColor9-v0	0.350	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact top1 retrieval score.
+top1_retrieval	InterceptMedium-v0	0.810	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact top1 retrieval score.
+top1_retrieval	ShellGameTouch-v0	0.830	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact top1 retrieval score.
+top1_retrieval	MEAN_5TASK	0.564	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Mean over five compact seed42 tasks.
+selector	RememberColor3-v0	0.720	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact visual selector score.
+selector	RememberColor5-v0	0.620	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact visual selector score.
+selector	RememberColor9-v0	0.290	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact visual selector score.
+selector	InterceptMedium-v0	0.750	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact visual selector score.
+selector	ShellGameTouch-v0	0.890	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact visual selector score.
+selector	MEAN_5TASK	0.654	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Mean over five compact seed42 tasks.
+gru	RememberColor3-v0	0.800	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact clean GRU score.
+gru	RememberColor5-v0	0.630	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact clean GRU score.
+gru	RememberColor9-v0	0.290	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact clean GRU score.
+gru	InterceptMedium-v0	0.790	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact clean GRU score.
+gru	ShellGameTouch-v0	0.830	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Compact clean GRU score.
+gru	MEAN_5TASK	0.668	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_nomem_top1_selector_gru_compact.tsv	Mean over five compact seed42 tasks.
+late_cue_direct_anchor	RememberColor3-v0	0.810	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_selector_gru_seed42_summary.tsv	Repaired 6/19 late-direct seed42 line.
+late_cue_direct_anchor	RememberColor5-v0	0.620	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_selector_gru_seed42_summary.tsv	Repaired 6/19 late-direct seed42 line.
+late_cue_direct_anchor	RememberColor9-v0	0.290	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_selector_gru_seed42_summary.tsv	Repaired 6/19 late-direct seed42 line.
+late_cue_direct_anchor	InterceptMedium-v0	0.790	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_selector_gru_seed42_summary.tsv	Repaired 6/19 late-direct seed42 line.
+late_cue_direct_anchor	ShellGameTouch-v0	0.820	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_selector_gru_seed42_summary.tsv	Repaired 6/19 late-direct seed42 line.
+late_cue_direct_anchor	MEAN_5TASK	0.666	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_selector_gru_seed42_summary.tsv	Mean over five repaired seed42 tasks.

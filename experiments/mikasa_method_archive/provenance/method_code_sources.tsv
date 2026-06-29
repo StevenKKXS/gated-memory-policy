@@ -1,0 +1,8 @@
+method	source_code_path	repo_target	notes
+no_memory	/mnt/3fs1/data/tingwen.du/icra_method_dev/experiments/memory_method_dev/code/imitation-learning-policies_anchor_carrier_clear_20260619	imitation-learning-policies/	Base diffusion transformer no-history line used for mean 0.408.
+top1_retrieval	/mnt/3fs1/data/tingwen.du/icra_method_dev/experiments/memory_method_dev/code/imitation-learning-policies_remdp	imitation-learning-policies/	Memory transformer retrieval line with history_retrieval_topk=1.
+selector	/mnt/3fs1/data/tingwen.du/icra_method_dev/experiments/memory_method_dev/code/imitation-learning-policies_visual_selector_carrier_20260619	imitation-learning-policies/	Visual selector carrier plus late cue anchor.
+gru	/mnt/3fs1/data/tingwen.du/icra_method_dev/experiments/memory_method_dev/code/imitation-learning-policies_visual_gru_carrier_clean_20260619	imitation-learning-policies/	Clean VisualGRUMemoryCarrier line used for mean 0.668.
+gru_burnin	/mnt/3fs1/data/tingwen.du/icra_method_dev/experiments/memory_method_dev/code/imitation-learning-policies_visual_gru_carrier_clean_burnin_20260620	imitation-learning-policies/	Latest clean GRU code copy with conditional burn-in helper and tests.
+late_cue_direct_anchor	/mnt/3fs1/data/tingwen.du/icra_method_dev/experiments/memory_method_dev/code/imitation-learning-policies_remdp_direct_anchor_20260611	imitation-learning-policies/	Historical high-score direct-anchor exploration line; preserve separately from repaired 6/19 line.
+late_cue_direct_anchor_repaired	/mnt/3fs1/data/tingwen.du/icra_method_dev/experiments/memory_method_dev/code/imitation-learning-policies_anchor_carrier_clear_20260619	imitation-learning-policies/	Repaired 6/19 late-direct/no-memory code copy.
