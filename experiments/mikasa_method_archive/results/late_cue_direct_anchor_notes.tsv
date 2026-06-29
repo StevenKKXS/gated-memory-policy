@@ -1,0 +1,3 @@
+line	mean	source_path	interpretation
+historical_direct_anchor_strict_best	0.736-0.738	/mnt/3fs1/data/tingwen.du/icra_method_dev/context_handoff_20260611_direct_anchor.md	Historical high-score exploration line; strong seed42 result but not treated as robust final baseline without protocol caveats.
+late_direct_anchor_repaired_seed42	0.666	/mnt/3fs1/data/tingwen.du/icra_method_dev/logs/mikasa_method_dev/20260620_selector_gru_seed42_summary.tsv	Repaired 6/19 seed42 line included for method comparison with no-memory/selector/GRU.
