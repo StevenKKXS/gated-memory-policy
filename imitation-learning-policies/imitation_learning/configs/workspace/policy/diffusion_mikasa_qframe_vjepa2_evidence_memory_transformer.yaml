@@ -1,0 +1,20 @@
+defaults:
+  - diffusion_mikasa_qframe_evidence_memory_transformer
+  - cond_encoder@history_evidence_feature_encoder: multi_token_encoder
+  - _self_
+
+history_evidence_feature_encoder:
+  name: history_evidence_feature_encoder
+  data_entry_names: ${workspace.train_dataset.image_keys}
+  feature_dim: 1024
+  image_encoder_partial:
+    _partial_: True
+    _target_: imitation_learning.models.encoders.vjepa2_image_encoder.VJEPA2ImageEncoder
+    model_name: vjepa2-vitl-fpc64-256
+    weights_path: /mnt/3fs1/data/tingwen.du/icra_method_dev/deps/vjepa2-vitl-fpc64-256
+    pretrained: true
+    frozen: true
+    feature_aggregation: mean
+    apply_image_norm: true
+    input_resolution: 256
+    image_meta: ???

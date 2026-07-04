@@ -1,0 +1,6 @@
+defaults:
+  - diffusion_mikasa_qframe_evidence_memory_transformer
+  - _self_
+
+denoising_network_partial:
+  evidence_candidate_max_num: 12

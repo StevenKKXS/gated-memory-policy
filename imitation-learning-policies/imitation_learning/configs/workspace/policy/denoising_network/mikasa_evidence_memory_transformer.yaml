@@ -1,0 +1,15 @@
+defaults:
+  - mikasa_memory_transformer
+  - _self_
+
+_target_: imitation_learning.models.denoising_networks.mikasa_evidence_memory_transformer.MikasaEvidenceMemoryTransformer
+
+evidence_memory_enabled: True
+evidence_memory_num_last_blocks: 2
+evidence_candidate_max_num: 8
+evidence_high_topk: 2
+evidence_low_topk: 2
+evidence_memory_query_source: global_cond
+evidence_memory_gate_init_bias: -4.0
+evidence_memory_out_init_gain: 0.0
+evidence_memory_residual_scale: 0.1

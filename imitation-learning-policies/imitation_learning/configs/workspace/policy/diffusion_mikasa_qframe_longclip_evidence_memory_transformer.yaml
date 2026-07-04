@@ -1,0 +1,19 @@
+defaults:
+  - diffusion_mikasa_qframe_evidence_memory_transformer
+  - cond_encoder@history_evidence_feature_encoder: multi_token_encoder
+  - _self_
+
+history_evidence_feature_encoder:
+  name: history_evidence_feature_encoder
+  data_entry_names: ${workspace.train_dataset.image_keys}
+  image_encoder_partial:
+    _partial_: True
+    _target_: imitation_learning.models.encoders.longclip_image_encoder.LongCLIPImageEncoder
+    model_name: longclip-L
+    weights_path: /mnt/3fs1/data/tingwen.du/icra_method_dev/deps/Long-CLIP/longclip-L.pt
+    pretrained: true
+    frozen: true
+    feature_aggregation: map
+    apply_image_norm: true
+    input_resolution: 224
+    image_meta: ???

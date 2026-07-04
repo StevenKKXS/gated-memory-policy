@@ -1,0 +1,93 @@
+defaults:
+  - conditional_transformer
+  - _self_
+
+_target_: imitation_learning.models.denoising_networks.mikasa_memory_transformer.MikasaMemoryTransformer
+
+max_history_len: 16
+freeze_non_history_modules: False
+history_attention_type: token_wise
+record_data_entries: []
+include_action_history: True
+
+memory_gate_include_first_token: True
+memory_gate_func: abs
+ssmax_scaling_param: null
+add_additional_self_attn: True
+skip_history_attn: False
+add_memory_gate_token: False
+binary_gating: True
+straight_through: ""
+
+history_retrieval_topk: null
+history_retrieval_query_source: denoising
+main_history_selector: ""
+main_history_first_token_num: 0
+main_history_recent_token_num: 0
+main_history_delta_token_num: 0
+main_history_persistent_anchor_enabled: False
+
+cue_event_residual_memory_enabled: False
+cue_event_memory_first_token_num: 4
+cue_event_memory_recent_token_num: 2
+cue_event_memory_delta_token_num: 4
+cue_event_memory_gate_init_bias: -4.0
+cue_event_memory_out_init_gain: 0.0
+
+late_cue_adapter_enabled: False
+late_cue_adapter_num_last_blocks: 2
+late_cue_adapter_first_token_num: 1
+late_cue_adapter_gate_init_bias: -6.0
+late_cue_adapter_out_init_gain: 0.0
+late_cue_adapter_residual_scale: 0.05
+late_cue_anchor_enabled: False
+late_cue_anchor_len: 1
+late_cue_anchor_causal_mask: False
+late_cue_action_prehead_adapter_enabled: False
+late_cue_action_prehead_adapter_gate_init_bias: -4.0
+late_cue_action_prehead_adapter_out_init_gain: 0.0
+late_cue_action_prehead_adapter_residual_scale: 0.05
+
+visual_memory_carrier_type: ""
+visual_memory_carrier_token_num: 1
+visual_memory_carrier_max_len: 64
+visual_memory_carrier_hidden_dim: null
+visual_memory_carrier_num_layers: 1
+visual_memory_carrier_num_heads: 8
+visual_memory_carrier_dropout: 0.0
+visual_memory_carrier_force_zero: False
+
+anchor_current_binding_enabled: False
+anchor_current_binding_num_last_blocks: 2
+anchor_current_binding_gate_init_bias: -4.0
+anchor_current_binding_out_init_gain: 0.0
+anchor_current_binding_residual_scale: 0.1
+
+history_summary_memory_enabled: False
+history_summary_memory_num_last_blocks: 2
+history_summary_memory_token_num: 2
+history_summary_memory_gate_init_bias: -4.0
+history_summary_memory_out_init_gain: 0.0
+history_summary_memory_residual_scale: 0.1
+
+state_token_memory_enabled: False
+state_token_memory_num_last_blocks: 2
+state_token_num: 2
+state_token_initial_std: 0.02
+state_token_update_gate_init_bias: -2.0
+state_token_update_out_init_gain: 0.001
+state_token_update_residual_scale: 1.0
+state_token_update_include_action_history: True
+state_token_protected_prefix_num: 0
+state_token_memory_gate_init_bias: -4.0
+state_token_memory_out_init_gain: 0.0
+state_token_memory_residual_scale: 0.1
+state_token_read_prefix_num: 0
+state_token_action_adapter_enabled: False
+state_token_action_adapter_gate_init_bias: -4.0
+state_token_action_adapter_out_init_gain: 0.0
+state_token_action_adapter_residual_scale: 0.05
+state_token_action_prehead_adapter_enabled: False
+state_token_action_prehead_adapter_gate_init_bias: -4.0
+state_token_action_prehead_adapter_out_init_gain: 0.0
+state_token_action_prehead_adapter_residual_scale: 0.05

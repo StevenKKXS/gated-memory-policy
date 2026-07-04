@@ -23,6 +23,6 @@ hydra:
 
 base_ckpt_path: null
 base_ckpt_cfg_str: ""
+base_ckpt_ignore_keywords: null
 
 attach_vscode_debugger: false
-

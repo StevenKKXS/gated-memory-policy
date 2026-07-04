@@ -1,0 +1,6 @@
+defaults:
+  - diffusion_mikasa_memory_transformer
+  - _self_
+
+denoising_network_partial:
+  history_retrieval_topk: 4

@@ -1,0 +1,23 @@
+defaults:
+  - diffusion_mikasa_memory_transformer
+  - override denoising_network@denoising_network_partial: mikasa_evidence_memory_transformer
+  - _self_
+
+_target_: imitation_learning.policies.mikasa_history_denoising_policy.MikasaHistoryDenoisingPolicy
+
+trainable_param_keywords:
+  - evidence_memory
+  - denoising_network.blocks.14
+  - denoising_network.blocks.15
+
+denoising_network_partial:
+  evidence_memory_enabled: true
+  evidence_candidate_max_num: 8
+  evidence_high_topk: 2
+  evidence_low_topk: 2
+  record_data_entries:
+    - qframe_evidence_memory_gate
+    - qframe_evidence_candidate_ratio
+    - qframe_evidence_high_selected_ratio
+    - qframe_evidence_low_selected_ratio
+    - qframe_evidence_delta_norm

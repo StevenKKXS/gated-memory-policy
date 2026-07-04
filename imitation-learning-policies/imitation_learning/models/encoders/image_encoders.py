@@ -549,7 +549,15 @@ class SharedModelManager(nn.Module):
                     from transformers import SiglipVisionModel
 
                     model: nn.Module = SiglipVisionModel.from_pretrained(model_name)
-                    map_model = copy.deepcopy(model.vision_model.head)
+                    map_head = getattr(model, "head", None)
+                    if map_head is None:
+                        vision_model = getattr(model, "vision_model", None)
+                        map_head = getattr(vision_model, "head", None)
+                    if map_head is None:
+                        raise AttributeError(
+                            f"Cannot find SigLIP MAP head for {type(model).__name__}"
+                        )
+                    map_model = copy.deepcopy(map_head)
                     del model
                 else:
                     raise ValueError(f"Model {model_name} is not supported")
